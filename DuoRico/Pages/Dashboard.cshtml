@@ -1,0 +1,66 @@
+﻿@page
+@model DuoRico.Pages.DashboardModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-header">Receita do mês "atual"</div>
+            <div class="card-body">
+                <h5 class="card-title">@Model.CurrentMonthBalance.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</h5>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card text-white bg-danger mb-3">
+            <div class="card-header">Despesa do mês "atual"</div>
+            <div class="card-body">
+                <h5 class="card-title">@Model.CurrentMonthBalance.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</h5>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card text-white bg-secondary mb-3">
+            <div class="card-header">Saldo do mês "atual"</div>
+            <div class="card-body">
+                <h5 class="card-title">@Model.CurrentMonthBalance.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</h5>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h3>Últimas Despesas do mês "atual"</h3>
+<ul class="list-group">
+    @if (Model.Last3Expenses != null && Model.Last3Expenses.Any())
+    {
+        foreach (var expense in Model.Last3Expenses)
+        {
+            <li class="list-group-item">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>@expense.Description</strong>
+                        <br />
+                        <small class="text-muted">@expense.Category</small>
+                    </div>
+                    <div>
+                        <span class="badge bg-danger">
+                            @expense.Amount.ToString("C", new System.Globalization.CultureInfo("pt-BR"))
+                        </span>
+                        <br />
+                        <small class="text-muted">@expense.CreatedAt.ToString("dd/MM/yyyy")</small>
+                    </div>
+                </div>
+            </li>
+        }
+    }
+    else
+    {
+        <li class="list-group-item text-center text-muted">
+            Não existe nenhuma despesa para este mês.
+        </li>
+    }
+</ul>

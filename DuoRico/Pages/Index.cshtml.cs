@@ -1,20 +1,19 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace DuoRico.Pages
+namespace DuoRico.Pages;
+
+public class IndexModel : PageModel
 {
-    public class IndexModel : PageModel
+    public IActionResult OnGet()
     {
-        private readonly ILogger<IndexModel> _logger;
-
-        public IndexModel(ILogger<IndexModel> logger)
+        // Verifica se o usuário está auteticado
+        if (User.Identity is { IsAuthenticated: true })
         {
-            _logger = logger;
+            return RedirectToPage("/Dashboard");
         }
 
-        public void OnGet()
-        {
-
-        }
+        // Se não, redireciona para a página de login
+        return RedirectToPage("/Account/Login", new { area = "Identity" });
     }
 }
