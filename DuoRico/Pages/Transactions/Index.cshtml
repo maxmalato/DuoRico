@@ -1,0 +1,41 @@
+@page "{type:alpha}"
+
+@model DuoRico.Pages_Transactions.IndexModel
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">Transações</h2>
+        <a asp-page="Create" class="btn btn-success">Nova Transação</a>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Descrição</th>
+                <th>Valor</th>
+                <th>Categoria</th>
+                <th>Pago</th>
+                <th>Nº Parcela</th>
+                <th>Criado em</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Transaction)
+            {
+                <tr>
+                    <td>@item.Description</td>
+                    <td>@item.Amount.ToString("R$")</td>
+                    <td>@item.Category</td>
+                    <td>@(item.IsPaid ? "Sim" : "Não")</td>
+                    <td>@item.InstallmentNumber</td>
+                    <td>@item.CreatedAt.ToString("dd/MM/yyyy")</td>
+                    <td>
+                        <a asp-page="./Edit" asp-route-id="@item.Id" asp-route-type="@Model.Type">Editar</a>
+                        <a asp-page="./Delete" asp-route-id="@item.Id" asp-route-type="@Model.Type">Excluir</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

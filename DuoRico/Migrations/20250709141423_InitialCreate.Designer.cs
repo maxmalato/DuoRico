@@ -122,12 +122,6 @@ namespace DuoRico.Migrations
                     b.Property<bool>("IsPaid")
                         .HasColumnType("boolean");
 
-                    b.Property<Guid?>("RecurringGroupId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int?>("TotalInstallments")
-                        .HasColumnType("integer");
-
                     b.Property<int>("Type")
                         .HasColumnType("integer");
 

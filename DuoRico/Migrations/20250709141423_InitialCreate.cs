@@ -170,8 +170,6 @@ namespace DuoRico.Migrations
                     Type = table.Column<int>(type: "integer", nullable: false),
                     IsPaid = table.Column<bool>(type: "boolean", nullable: false),
                     InstallmentNumber = table.Column<int>(type: "integer", nullable: true),
-                    TotalInstallments = table.Column<int>(type: "integer", nullable: true),
-                    RecurringGroupId = table.Column<Guid>(type: "uuid", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UserId = table.Column<string>(type: "text", nullable: false)
                 },

@@ -30,11 +30,16 @@ public class Transaction
 
     public bool IsPaid { get; set; } = false;
 
-    // Para recorrência/parcelamento
-    public int? InstallmentNumber { get; set; }
+    [Required]
+    public int InstallmentNumber { get; set; }
 
-    public int? TotalInstallments { get; set; }
-    public Guid? RecurringGroupId { get; set; }
+    [Required]
+    [Range(1, 12)]
+    public int Month { get; set; }
+
+    [Required]
+    [Range(2025, 2100)]
+    public int Year { get; set; }
 
     [Required]
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

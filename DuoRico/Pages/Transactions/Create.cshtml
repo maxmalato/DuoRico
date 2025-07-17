@@ -1,0 +1,73 @@
+@page "{type:alpha}"
+
+@model DuoRico.Pages_Transactions.CreateModel
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">Nova Transação</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Transaction.Description" class="form-label"></label>
+                            <input asp-for="Transaction.Description" class="form-control" />
+                            <span asp-validation-for="Transaction.Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Transaction.Amount" class="form-label"></label>
+                            <input asp-for="Transaction.Amount" class="form-control" />
+                            <span asp-validation-for="Transaction.Amount" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Transaction.Category" class="form-label"></label>
+                            <select asp-for="Transaction.Category" class="form-control" asp-items="@(new SelectList(Model.Categories))"></select>
+                            <span asp-validation-for="Transaction.Category" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Transaction.Month" class="form-label"></label>
+                            <input asp-for="Transaction.Month" class="form-control" />
+                            <span asp-validation-for="Transaction.Month" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Transaction.Year" class="form-label"></label>
+                            <input asp-for="Transaction.Year" class="form-control" />
+                            <span asp-validation-for="Transaction.Year" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Transaction.InstallmentNumber" class="form-label"></label>
+                            <input asp-for="Transaction.InstallmentNumber" class="form-control" />
+                            <span asp-validation-for="Transaction.InstallmentNumber" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" asp-for="Transaction.IsPaid" />
+                            <label class="form-check-label" asp-for="Transaction.IsPaid"></label>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <input type="submit" value="Criar" class="btn btn-success" />
+                            <a asp-page="Index" class="btn btn-secondary">Voltar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
