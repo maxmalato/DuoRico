@@ -25,7 +25,6 @@ public class Transaction
     [Required]
     public string Category { get; set; }
 
-    [Required]
     public TransactionType Type { get; set; }
 
     public bool IsPaid { get; set; } = false;
@@ -41,11 +40,9 @@ public class Transaction
     [Range(2025, 2100)]
     public int Year { get; set; }
 
-    [Required]
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-    [Required]
-    public string UserId { get; set; }
+    public string? UserId { get; set; }
 
     public virtual ApplicationUser? User { get; set; }
 }

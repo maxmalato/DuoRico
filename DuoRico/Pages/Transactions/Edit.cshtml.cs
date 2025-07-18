@@ -28,16 +28,21 @@ public class EditModel : PageModel
     public async Task<IActionResult> OnGetAsync(Guid? id, string type)
     {
         if (!Enum.TryParse<TransactionType>(type, true, out var parsedType))
-
+        {
             return NotFound();
+        }
 
         if (id == null)
+        {
             return NotFound();
+        }
 
         var loggedInUser = await _userManager.GetUserAsync(User);
 
         if (loggedInUser == null)
+        {
             return RedirectToPage("/Account/Login", new { area = "Identity" });
+        }
 
         if (loggedInUser.CoupleId == null)
         {
@@ -49,7 +54,6 @@ public class EditModel : PageModel
         Categories = TransactionCategoryHelper.GetCategories(Type);
 
         Transaction = await _context.Transactions
-            .AsNoTracking()
             .FirstOrDefaultAsync(t => t.Id == id
                 && t.User.CoupleId == loggedInUser.CoupleId
                 && t.Type == parsedType);
@@ -60,6 +64,7 @@ public class EditModel : PageModel
         return Page();
     }
 
+    /*
     public async Task<IActionResult> OnPostAsync(Guid? id, string type)
     {
         if (!Enum.TryParse<TransactionType>(type, true, out var parsedType))
@@ -114,6 +119,66 @@ public class EditModel : PageModel
         //Type = parsedType;
         //Categories = TransactionCategoryHelper.GetCategories(Type);
         return Page();
+    }
+    */
+
+    public async Task<IActionResult> OnPostAsync(Guid? id, string type)
+    {
+        if (!Enum.TryParse<TransactionType>(type, true, out var parsedType))
+        {
+            return NotFound();
+        }
+
+        if (id == null)
+        {
+            return NotFound();
+        }
+
+        var loggedInUser = await _userManager.GetUserAsync(User);
+
+        if (loggedInUser == null)
+        {
+            return RedirectToPage("/Account/Login", new { area = "Identity" });
+        }
+
+        if (loggedInUser.CoupleId == null)
+        {
+            ModelState.AddModelError(string.Empty, "Você precisa estar em um casal para editar transações.");
+            return Page();
+        }
+
+        var transactionToUpdate = await _context.Transactions
+            .FirstOrDefaultAsync(t => t.Id == id
+                && t.User.CoupleId == loggedInUser.CoupleId
+                && t.Type == parsedType);
+
+        if (transactionToUpdate == null)
+        {
+            return NotFound("Transação não encontrada ou você não tem permissão para editá-la.");
+        }
+
+        transactionToUpdate.Description = Transaction.Description;
+        transactionToUpdate.Amount = Transaction.Amount;
+        transactionToUpdate.Category = Transaction.Category;
+        transactionToUpdate.IsPaid = Transaction.IsPaid;
+
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!TransactionExists(Transaction.Id))
+            {
+                return NotFound();
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        return RedirectToPage("./Index", new { type });
     }
 
     private bool TransactionExists(Guid id)

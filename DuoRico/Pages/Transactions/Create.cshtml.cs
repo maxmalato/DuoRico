@@ -56,7 +56,7 @@ public class CreateModel : PageModel
 
         var loggedInUser = await _userManager.GetUserAsync(User);
 
-        if (loggedInUser == null)
+        if (loggedInUser == null && loggedInUser?.CoupleId == null)
         {
             return RedirectToPage("/Account/Login", new { area = "Identity" });
         }

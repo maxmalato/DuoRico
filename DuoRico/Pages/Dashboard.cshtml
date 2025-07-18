@@ -9,7 +9,7 @@
         <div class="card text-white bg-success mb-3">
             <div class="card-header">Receita do mês "atual"</div>
             <div class="card-body">
-                <h5 class="card-title">@Model.CurrentMonthBalance.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</h5>
+                <h5 class="card-title">@Model.CurrentMonthIncome.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</h5>
             </div>
         </div>
     </div>
@@ -18,7 +18,7 @@
         <div class="card text-white bg-danger mb-3">
             <div class="card-header">Despesa do mês "atual"</div>
             <div class="card-body">
-                <h5 class="card-title">@Model.CurrentMonthBalance.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</h5>
+                <h5 class="card-title">@Model.CurrentMonthExpense.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</h5>
             </div>
         </div>
     </div>
