@@ -12,7 +12,7 @@
         <thead>
             <tr>
                 <th>Descrição</th>
-                <th>Valor</th>
+                <th>Valor R$</th>
                 <th>Categoria</th>
                 <th>Pago</th>
                 <th>Nº Parcela</th>
@@ -25,7 +25,7 @@
             {
                 <tr>
                     <td>@item.Description</td>
-                    <td>@item.Amount</td>
+                    <td>R$ @item.Amount</td>
                     <td>@item.Category</td>
                     <td>@(item.IsPaid ? "Sim" : "Não")</td>
                     <td>@item.InstallmentNumber</td>

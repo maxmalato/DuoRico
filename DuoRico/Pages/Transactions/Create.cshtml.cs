@@ -69,6 +69,6 @@ public class CreateModel : PageModel
         _context.Transactions.Add(Transaction);
         await _context.SaveChangesAsync();
 
-        return RedirectToPage("./Index", new { Type });
+        return RedirectToPage("./Index", new { type });
     }
 }

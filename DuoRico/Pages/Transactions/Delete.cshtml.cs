@@ -1,4 +1,5 @@
 using DuoRico.Data;
+using DuoRico.Helpers;
 using DuoRico.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -21,37 +22,50 @@ public class DeleteModel : PageModel
     [BindProperty]
     public Transaction Transaction { get; set; } = default!;
 
-    public async Task<IActionResult> OnGetAsync(Guid? id)
+    public TransactionType Type { get; set; }
+
+    public List<string> Categories { get; set; } = new();
+
+    public async Task<IActionResult> OnGetAsync(Guid? id, string type)
     {
-        if (id == null)
+        if (!Enum.TryParse<TransactionType>(type, true, out var parsedType) && id == null)
+        {
             return NotFound();
+        }
 
         var loggedInUser = await _userManager.GetUserAsync(User);
 
         if (loggedInUser == null)
+        {
             return RedirectToPage("/Account/Login", new { area = "Identity" });
+        }
 
         if (loggedInUser.CoupleId == null)
         {
-            ModelState.AddModelError(string.Empty, "Você precisa estar em um casal para excluir transações.");
+            ModelState.AddModelError(string.Empty, "Você precisa estar em um casal para editar transações.");
             return Page();
         }
+
+        Type = parsedType;
+        Categories = TransactionCategoryHelper.GetCategories(Type);
 
         Transaction = await _context.Transactions
             .FirstOrDefaultAsync(t => t.Id == id
                 && t.User.CoupleId == loggedInUser.CoupleId
-                && t.Type == TransactionType.Expense);
+                && t.Type == parsedType);
 
         if (Transaction == null)
-            return NotFound("Transação não encontrada ou você não tem permissão para excluí-la.");
+            return NotFound("Transação não encontrada ou você não tem permissão para editá-la.");
 
         return Page();
     }
 
-    public async Task<IActionResult> OnPostAsync(Guid? id)
+    public async Task<IActionResult> OnPostAsync(Guid? id, string type)
     {
-        if (id == null)
+        if (!Enum.TryParse<TransactionType>(type, true, out var parsedType) && id == null)
+        {
             return NotFound();
+        }
 
         var loggedInUser = await _userManager.GetUserAsync(User);
 
@@ -64,17 +78,17 @@ public class DeleteModel : PageModel
             return Page();
         }
 
-        var transaction = await _context.Transactions
+        var transactionToUpdate = await _context.Transactions
             .FirstOrDefaultAsync(t => t.Id == id
                 && t.User.CoupleId == loggedInUser.CoupleId
-                && t.Type == TransactionType.Expense);
+                && t.Type == parsedType);
 
-        if (transaction == null)
+        if (transactionToUpdate == null)
             return NotFound("Transação não encontrada ou você não tem permissão para excluí-la.");
 
-        _context.Transactions.Remove(transaction);
+        _context.Transactions.Remove(transactionToUpdate);
         await _context.SaveChangesAsync();
 
-        return RedirectToPage("./Index");
+        return RedirectToPage("./Index", new { type });
     }
 }

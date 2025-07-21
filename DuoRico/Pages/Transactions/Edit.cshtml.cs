@@ -27,12 +27,7 @@ public class EditModel : PageModel
 
     public async Task<IActionResult> OnGetAsync(Guid? id, string type)
     {
-        if (!Enum.TryParse<TransactionType>(type, true, out var parsedType))
-        {
-            return NotFound();
-        }
-
-        if (id == null)
+        if (!Enum.TryParse<TransactionType>(type, true, out var parsedType) && id == null)
         {
             return NotFound();
         }
