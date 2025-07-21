@@ -17,6 +17,7 @@ builder.Services.AddRazorPages();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<TransactionService>();
+builder.Services.AddScoped<IDropdownService, DropdownService>();
 
 var app = builder.Build();
 

@@ -34,19 +34,19 @@
 
                         <div class="mb-3">
                             <label asp-for="Transaction.Month" class="form-label"></label>
-                            <input asp-for="Transaction.Month" class="form-control" />
+                            <select asp-for="Transaction.Month" class="form-control" asp-items="Model.MonthOptions"></select>
                             <span asp-validation-for="Transaction.Month" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
                             <label asp-for="Transaction.Year" class="form-label"></label>
-                            <input asp-for="Transaction.Year" class="form-control" />
+                            <select asp-for="Transaction.Year" class="form-control" asp-items="Model.YearOptions"></select>
                             <span asp-validation-for="Transaction.Year" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
                             <label asp-for="Transaction.InstallmentNumber" class="form-label"></label>
-                            <input asp-for="Transaction.InstallmentNumber" class="form-control" />
+                            <select asp-for="Transaction.InstallmentNumber" class="form-control" asp-items="Model.InstallmentOptions"></select>
                             <span asp-validation-for="Transaction.InstallmentNumber" class="text-danger"></span>
                         </div>
 

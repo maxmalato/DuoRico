@@ -1,6 +1,7 @@
 using DuoRico.Data;
-using DuoRico.Models;
 using DuoRico.Helpers;
+using DuoRico.Models;
+using DuoRico.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -12,11 +13,13 @@ public class CreateModel : PageModel
 {
     private readonly ApplicationDbContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IDropdownService _dropdownService;
 
-    public CreateModel(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+    public CreateModel(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IDropdownService dropdownService)
     {
         _context = context;
         _userManager = userManager;
+        _dropdownService = dropdownService;
     }
 
     [BindProperty]
@@ -24,6 +27,9 @@ public class CreateModel : PageModel
 
     public TransactionType Type { get; set; }
     public List<string> Categories { get; set; } = new();
+    public SelectList MonthOptions { get; set; }
+    public SelectList YearOptions { get; set; }
+    public SelectList InstallmentOptions { get; set; }
 
     public IActionResult OnGet(string type)
     {
@@ -34,6 +40,9 @@ public class CreateModel : PageModel
 
         Type = parsedType;
         Categories = TransactionCategoryHelper.GetCategories(Type);
+        MonthOptions = _dropdownService.GetMonthOptions();
+        YearOptions = _dropdownService.GetYearOptions(DateTime.Now.Year, 5);
+        InstallmentOptions = _dropdownService.GetInstallmentOptions(48);
 
         ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
 
