@@ -5,6 +5,20 @@
 }
 
 <div class="row">
+    <form method="get" class="row g-3 align-items-end">
+        <div class="col-md">
+            <label asp-for="SelectMonth" class="form-label">Mês</label>
+            <select asp-for="SelectMonth" asp-items="Model.MonthOptions" class="form-select"></select>
+        </div>
+        <div class="col-md">
+            <label asp-for="SelectYear" class="form-label">Ano</label>
+            <select asp-for="SelectYear" asp-items="Model.YearOptions" class="form-select"></select>
+        </div>
+        <div class="col-md-auto">
+            <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+        </div>
+    </form>
+
     <div class="col-md-4">
         <div class="card text-white bg-success mb-3">
             <div class="card-header">Receita do mês "atual"</div>

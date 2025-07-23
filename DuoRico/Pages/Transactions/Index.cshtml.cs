@@ -1,19 +1,34 @@
 using DuoRico.Data;
 using DuoRico.Models;
 using DuoRico.Pages.Transactions;
+using DuoRico.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace DuoRico.Pages_Transactions;
 
 public class IndexModel : TransactionPageModel
 {
-    public IndexModel(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+    private readonly IDropdownService _dropdownService;
+
+    public IndexModel(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IDropdownService dropdownService)
         : base(context, userManager)
-    { }
+    { 
+        _dropdownService = dropdownService;
+    }
 
     public IList<Transaction> TransactionList { get; set; } = default!;
+
+    [BindProperty(SupportsGet = true)]
+    public int SelectMonth { get; set; }
+
+    [BindProperty(SupportsGet = true)]
+    public int SelectYear { get; set; }
+
+    public SelectList MonthOptions { get; set; } = default!;
+    public SelectList YearOptions { get; set; } = default!;
 
     public async Task<IActionResult> OnGetAsync(string type)
     {
@@ -21,9 +36,19 @@ public class IndexModel : TransactionPageModel
 
         if (validationResult != null) return validationResult;
 
+        if (SelectMonth == 0) SelectMonth = DateTime.Now.Month;
+        if (SelectYear == 0) SelectYear = DateTime.Now.Year;
+
+        MonthOptions = _dropdownService.GetMonthOptions();
+        YearOptions = _dropdownService.GetYearOptions(DateTime.Now.Year, 5);
+
         TransactionList = await _context.Transactions
             .Include(t => t.User)
-            .Where(t => t.User.CoupleId == loggedInUser.CoupleId && t.Type == Type)
+            .Where(
+                    t => t.User.CoupleId == loggedInUser.CoupleId && 
+                    t.Type == Type &&
+                    t.Month == SelectMonth && 
+                    t.Year == SelectYear)
             .OrderByDescending(t => t.CreatedAt)
             .ToListAsync();
 

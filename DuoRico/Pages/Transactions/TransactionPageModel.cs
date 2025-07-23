@@ -1,10 +1,8 @@
 ﻿using DuoRico.Data;
 using DuoRico.Models;
-using DuoRico.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace DuoRico.Pages.Transactions;
 
