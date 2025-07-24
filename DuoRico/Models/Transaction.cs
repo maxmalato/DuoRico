@@ -29,8 +29,11 @@ public class Transaction
 
     public bool IsPaid { get; set; } = false;
 
-    [Required]
+    public int TotalInstallments { get; set; }
+
     public int InstallmentNumber { get; set; }
+
+    public Guid? InstallmentGroupId { get; set; }
 
     [Required]
     [Range(1, 12)]

@@ -47,12 +47,36 @@ public class CreateModel : TransactionPageModel
             return Page();
         }
 
-        // Definir propriedades automáticas antes de salvar, ou seja, elas não são passadas pelo formulário
-        Transaction.Type = Type;
-        Transaction.CreatedAt = DateTime.UtcNow;
-        Transaction.UserId = loggedInUser.Id;
+        var transactions = new DateTime(Transaction.Year, Transaction.Month, 1);
+        var newTransactions = new List<Transaction>();
+        var installmentGroupId = Guid.NewGuid();
 
-        _context.Transactions.Add(Transaction);
+        // Loop para criar transações para cada parcela, se necessário
+        for (int i = 0; i < Transaction.TotalInstallments; i++)
+        {
+            var currentInstallmentDate = transactions.AddMonths(i);
+
+            var installment = new Transaction
+            {
+                Id = Guid.NewGuid(),
+                Description = Transaction.Description,
+                Amount = Transaction.Amount,
+                Category = Transaction.Category,
+                Type = Type,
+                IsPaid = Transaction.IsPaid,
+                TotalInstallments = Transaction.TotalInstallments,
+                InstallmentNumber = i + 1,
+                InstallmentGroupId = Transaction.TotalInstallments > 1 ? installmentGroupId : null,
+                Month = currentInstallmentDate.Month,
+                Year = currentInstallmentDate.Year,
+                CreatedAt = DateTime.UtcNow,
+                UserId = loggedInUser.Id
+            };
+
+            newTransactions.Add(installment);
+        }
+
+        await _context.Transactions.AddRangeAsync(newTransactions);
         await _context.SaveChangesAsync();
 
         return RedirectToPage("./Index", new { type });

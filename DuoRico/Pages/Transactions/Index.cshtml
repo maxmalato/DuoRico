@@ -31,7 +31,8 @@
                 <th>Valor R$</th>
                 <th>Categoria</th>
                 <th>Pago</th>
-                <th>Nº Parcela</th>
+                <th>Parcela Atual</th>
+                <th>Total de Parcelas</th>
                 <th>Criado em</th>
                 <th></th>
             </tr>
@@ -45,6 +46,7 @@
                     <td>@item.Category</td>
                     <td>@(item.IsPaid ? "Sim" : "Não")</td>
                     <td>@item.InstallmentNumber</td>
+                    <td>@item.TotalInstallments</td>
                     <td>@item.CreatedAt.ToString("dd/MM/yyyy")</td>
                     <td>
                         <a asp-page="./Edit" asp-route-id="@item.Id" asp-route-type="@Model.Type">Editar</a>
