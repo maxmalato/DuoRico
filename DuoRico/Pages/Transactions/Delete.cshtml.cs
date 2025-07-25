@@ -15,7 +15,7 @@ public class DeleteModel : TransactionPageModel
 
     public async Task<IActionResult> OnGetAsync(Guid? id, string type)
     {
-        if (id == null) return NotFound();
+        if (id == null) return NotFound("Id não encontrado.");
 
         var (validationResult, loggedInUser) = await ValidateAndLoadContextAsync(type);
 
@@ -24,7 +24,7 @@ public class DeleteModel : TransactionPageModel
         Categories = TransactionCategoryHelper.GetCategories(Type);
 
         Transaction = await _context.Transactions
-            .FirstOrDefaultAsync(t => t.Id == id && t.User.CoupleId == loggedInUser.CoupleId && t.User.Id == loggedInUser.Id);
+            .FirstOrDefaultAsync(t => t.Id == id && t.User.CoupleId == loggedInUser.CoupleId);
 
         if (Transaction == null)
             return NotFound("Transação não encontrada ou você não tem permissão para editá-la.");
@@ -41,7 +41,7 @@ public class DeleteModel : TransactionPageModel
         if (validationResult != null) return validationResult;
 
         var transactionToUpdate = await _context.Transactions
-            .FirstOrDefaultAsync(t => t.Id == id && t.User.CoupleId == loggedInUser.CoupleId && t.User.Id == loggedInUser.Id);
+            .FirstOrDefaultAsync(t => t.Id == id && t.User.CoupleId == loggedInUser.CoupleId);
 
         if (transactionToUpdate == null)
             return NotFound("Transação não encontrada ou você não tem permissão para excluí-la.");

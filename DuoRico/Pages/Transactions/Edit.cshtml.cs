@@ -16,16 +16,17 @@ public class EditModel : TransactionPageModel
 
     public async Task<IActionResult> OnGetAsync(Guid? id, string type)
     {
-        if (id == null) return NotFound();
+        if (id == null) return NotFound("Id não encontrado.");
 
         var (validationResult, loggedInUser) = await ValidateAndLoadContextAsync(type);
 
         if (validationResult != null) return validationResult;
 
         Transaction = await _context.Transactions
-            .FirstOrDefaultAsync(t => t.Id == id && t.User.CoupleId == loggedInUser.CoupleId && t.User.Id == loggedInUser.Id);
+            .FirstOrDefaultAsync(t => t.Id == id && t.User.CoupleId == loggedInUser.CoupleId);
 
-        if (Transaction == null) return NotFound();
+        if (Transaction == null)
+            return NotFound("Transação não encontrada ou você não tem permissão para editá-la.");
 
         Categories = TransactionCategoryHelper.GetCategories(Type);
 
@@ -41,7 +42,7 @@ public class EditModel : TransactionPageModel
         if (validationResult != null) return validationResult;
 
         var transactionToUpdate = await _context.Transactions
-            .FirstOrDefaultAsync(t => t.Id == id && t.User.CoupleId == loggedInUser.CoupleId && t.User.Id == loggedInUser.Id);
+            .FirstOrDefaultAsync(t => t.Id == id && t.User.CoupleId == loggedInUser.CoupleId);
 
         if (transactionToUpdate == null)
         {
