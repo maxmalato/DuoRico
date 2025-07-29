@@ -42,7 +42,7 @@
             {
                 <tr>
                     <td>@item.Description</td>
-                    <td>R$ @item.Amount</td>
+                    <td>@item.Amount.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</td>
                     <td>@item.Category</td>
                     <td>@(item.IsPaid ? "Sim" : "Não")</td>
                     <td>@item.InstallmentNumber</td>
