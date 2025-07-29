@@ -65,15 +65,15 @@ namespace DuoRico.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
-            [EmailAddress]
+            [Required(ErrorMessage = "O e-mail é obrigatório.")]
+            [EmailAddress(ErrorMessage = "Digite um e-mail válido.")]
             public string Email { get; set; }
 
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
+            [Required(ErrorMessage = "A senha é obrigatória.")]
             [DataType(DataType.Password)]
             public string Password { get; set; }
 
@@ -81,7 +81,7 @@ namespace DuoRico.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Display(Name = "Remember me?")]
+            [Display(Name = "Lembrar-me")]
             public bool RememberMe { get; set; }
         }
 
@@ -124,12 +124,12 @@ namespace DuoRico.Areas.Identity.Pages.Account
                 }
                 if (result.IsLockedOut)
                 {
-                    _logger.LogWarning("User account locked out.");
+                    _logger.LogWarning("Usuário está com a conta bloqueada.");
                     return RedirectToPage("./Lockout");
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    ModelState.AddModelError(string.Empty, "Tentativa de login inválida.");
                     return Page();
                 }
             }

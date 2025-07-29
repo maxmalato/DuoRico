@@ -64,7 +64,7 @@ public class RegisterModel : PageModel
     /// </summary>
     public class InputModel
     {
-        [Required]
+        [Required(ErrorMessage = "O nome é obrigatório.")]
         [Display(Name = "Nome completo")]
         public string Name { get; set; }
 
@@ -72,7 +72,7 @@ public class RegisterModel : PageModel
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-        [Required]
+        [Required(ErrorMessage = "O e-mail é obrigatório.")]
         [EmailAddress]
         [Display(Name = "E-mail")]
         public string Email { get; set; }
@@ -81,8 +81,8 @@ public class RegisterModel : PageModel
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-        [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+        [Required(ErrorMessage = "A senha é obrigatória.")]
+        [StringLength(100, ErrorMessage = "A senha deve estar entre {2} e {1} caracteres.", MinimumLength = 6)]
         [DataType(DataType.Password)]
         [Display(Name = "Senha")]
         public string Password { get; set; }
@@ -92,8 +92,8 @@ public class RegisterModel : PageModel
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         [DataType(DataType.Password)]
-        [Display(Name = "Confirme sua senha")]
-        [Compare("Password", ErrorMessage = "As senhas não são iguais")]
+        [Display(Name = "Confirme sua senha.")]
+        [Compare("Password", ErrorMessage = "As senhas não são iguais.")]
         public string ConfirmPassword { get; set; }
     }
 

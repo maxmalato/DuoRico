@@ -1,0 +1,27 @@
+﻿@{
+    Layout = "/Pages/Shared/_LayoutLoginRegister.cshtml";
+}
+
+<div class="container d-flex align-items-center justify-content-center min-vh-100">
+    <div class="row w-100">
+        <div class="col-12 col-sm-10 col-md-8 col-lg-5 mx-auto">
+
+            @* O logo e o nome do app, agora centralizados em um único lugar. *@
+            <div class="d-flex justify-content-center align-items-center gap-2 mb-3">
+                <i class="bi bi-currency-exchange fs-1 text-warning"></i>
+                <h2 class="fw-bold fs-1" style="color: #333;">Duo Rico</h2>
+            </div>
+
+            @* O "card" branco que envolve o formulário *@
+            <section class="p-4 border rounded shadow-sm bg-white">
+                @RenderBody()
+            </section>
+
+        </div>
+    </div>
+</div>
+
+@* A seção de scripts é passada para o layout pai. *@
+@section Scripts {
+    @await RenderSectionAsync("Scripts", required: false)
+}
