@@ -5,67 +5,72 @@
 }
 
 <div class="row">
-    <form method="get" class="row g-3 align-items-end">
-        <div class="col-md">
-            <label asp-for="SelectMonth" class="form-label">Mês</label>
-            <select asp-for="SelectMonth" asp-items="Model.MonthOptions" class="form-select"></select>
-        </div>
-        <div class="col-md">
-            <label asp-for="SelectYear" class="form-label">Ano</label>
-            <select asp-for="SelectYear" asp-items="Model.YearOptions" class="form-select"></select>
-        </div>
-        <div class="col-md-auto">
-            <button type="submit" class="btn btn-primary w-100">Filtrar</button>
-        </div>
-    </form>
+    <div class="container-fluid">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3">
+            <h2 class="text-center text-md-start fw-bold">Dashboard</h2>
 
-    <div class="col-md-4">
-        <div class="card text-white bg-success mb-3">
-            <div class="card-header">Receita do mês "atual"</div>
-            <div class="card-body">
-                <h5 class="card-title">@Model.CurrentMonthIncome.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</h5>
-            </div>
+            <form method="get" class="d-flex flex-column flex-md-row align-items-md-center gap-2">
+                <select asp-for="SelectMonth" asp-items="Model.MonthOptions" class="form-select"></select>
+                <select asp-for="SelectYear" asp-items="Model.YearOptions" class="form-select"></select>
+                <button type="submit" class="btn btn-outline-secondary w-100 w-md-auto mt-2 mt-md-0">Filtrar</button>
+            </form>
         </div>
     </div>
 
     <div class="col-md-4">
-        <div class="card text-white bg-danger mb-3">
-            <div class="card-header">Despesa do mês "atual"</div>
-            <div class="card-body">
-                <h5 class="card-title">@Model.CurrentMonthExpense.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</h5>
+        <div class="border border-success mb-3 p-4 rounded-3">
+            <div class="d-flex justify-content-between">
+                <div class="mb-3">Receita de @Model.SelectedMonthName</div>
+                <i class="bi bi-arrow-up-circle fs-3 text-success"></i>
             </div>
+            <h5 class="fs-3 fw-bold">@Model.CurrentMonthIncome.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</h5>
         </div>
     </div>
 
     <div class="col-md-4">
-        <div class="card text-white bg-secondary mb-3">
-            <div class="card-header">Saldo do mês "atual"</div>
-            <div class="card-body">
-                <h5 class="card-title">@Model.CurrentMonthBalance.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</h5>
+        <div class="border border-danger mb-3 p-4 rounded-3">
+            <div class="d-flex justify-content-between">
+                <div class="mb-3">Despesa de @Model.SelectedMonthName</div>
+                <i class="bi bi-arrow-down-circle fs-3 text-danger"></i>
             </div>
+            <h5 class="fs-3 fw-bold">@Model.CurrentMonthExpense.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</h5>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="border border-warning mb-3 p-4 rounded-3">
+            <div class="d-flex justify-content-between">
+                <div class="mb-3">Saldo de @Model.SelectedMonthName</div>
+                <i class="bi bi-currency-dollar fs-3 text-warning"></i>
+            </div>
+            <h5 class="fs-3 fw-bold">@Model.CurrentMonthBalance.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</h5>
         </div>
     </div>
 </div>
 
-<h3>Últimas Despesas do mês "atual"</h3>
+<h3 class="mt-4 text-center text-lg-start fw-bold">Últimas Despesas de @Model.SelectedMonthName</h3>
 <ul class="list-group">
     @if (Model.Last3Expenses != null && Model.Last3Expenses.Any())
     {
         foreach (var expense in Model.Last3Expenses)
         {
             <li class="list-group-item">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <strong>@expense.Description</strong>
-                        <br />
-                        <small class="text-muted">@expense.Category</small>
-                    </div>
-                    <div>
-                        <span class="badge bg-danger">
+                <div class="py-2">
+                    <div class="d-flex justify-content-between">
+                        <div class="d-flex align-items-center gap-2 pe-2">
+                            <strong>@expense.Description</strong>
+                            <span class="text-muted">(@expense.InstallmentNumber/@expense.TotalInstallments)</span>
+                            <span class="badge @(expense.IsPaid ? "bg-success" : "bg-secondary") p-2">
+                                @(expense.IsPaid ? "Pago" : "Não pago")
+                            </span>
+                        </div>
+                        <span class="badge bg-danger p-2">
                             @expense.Amount.ToString("C", new System.Globalization.CultureInfo("pt-BR"))
                         </span>
-                        <br />
-                        <small class="text-muted">@expense.CreatedAt.ToString("dd/MM/yyyy")</small>
+                    </div>
+                    <div>
+                        <small class="text-muted">@expense.Category</small>
+                        <small class="text-muted">- @expense.CreatedAt.ToString("dd/MM/yyyy")</small>
                     </div>
                 </div>
             </li>

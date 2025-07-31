@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 
 namespace DuoRico.Pages;
 
@@ -26,6 +27,7 @@ public class DashboardModel : PageModel
 
     public decimal CurrentMonthIncome { get; set; }
     public decimal CurrentMonthExpense { get; set; }
+    public string SelectedMonthName { get; private set; }
     public decimal CurrentMonthBalance => CurrentMonthIncome - CurrentMonthExpense;
     public List<Transaction> Last3Expenses { get; set; } = new();
 
@@ -42,6 +44,10 @@ public class DashboardModel : PageModel
     {
         if (SelectMonth == 0) SelectMonth = DateTime.Now.Month;
         if (SelectYear == 0) SelectYear = DateTime.Now.Year;
+
+        var culture = new CultureInfo("pt-BR");
+        SelectedMonthName = culture.TextInfo.ToTitleCase(new DateTime(SelectYear, SelectMonth, 1).ToString("MMMM", culture));
+
 
         MonthOptions = _dropdownService.GetMonthOptions();
         YearOptions = _dropdownService.GetYearOptions(DateTime.Now.Year, 5);
