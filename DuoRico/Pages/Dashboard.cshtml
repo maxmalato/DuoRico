@@ -54,24 +54,21 @@
     {
         foreach (var expense in Model.Last3Expenses)
         {
-            <li class="list-group-item">
-                <div class="py-2">
-                    <div class="d-flex justify-content-between">
-                        <div class="d-flex align-items-center gap-2 pe-2">
-                            <strong>@expense.Description</strong>
-                            <span class="text-muted">(@expense.InstallmentNumber/@expense.TotalInstallments)</span>
-                            <span class="badge @(expense.IsPaid ? "bg-success" : "bg-secondary") p-2">
-                                @(expense.IsPaid ? "Pago" : "Não pago")
-                            </span>
-                        </div>
-                        <span class="badge bg-danger p-2">
-                            @expense.Amount.ToString("C", new System.Globalization.CultureInfo("pt-BR"))
-                        </span>
+            <li class="list-group-item p-2">
+                <div class="d-flex justify-content-between">
+                    <div class="d-flex align-items-center gap-2 pe-2">
+                        <strong class="text-truncate">@expense.Description</strong>
+                        <span class="text-muted">(@expense.InstallmentNumber/@expense.TotalInstallments)</span>
                     </div>
-                    <div>
-                        <small class="text-muted">@expense.Category</small>
-                        <small class="text-muted">- @expense.CreatedAt.ToString("dd/MM/yyyy")</small>
-                    </div>
+                    <span class="badge bg-danger p-2">
+                        @expense.Amount.ToString("C", new System.Globalization.CultureInfo("pt-BR"))
+                    </span>
+                </div>
+                <div>
+                    <span class="badge @(expense.IsPaid ? "bg-success" : "bg-secondary") p-2">
+                        @(expense.IsPaid ? "Pago" : "Não pago")
+                    </span>
+                    <small class="text-muted">@expense.Category</small>
                 </div>
             </li>
         }
