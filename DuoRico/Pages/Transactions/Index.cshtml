@@ -1,58 +1,140 @@
 @page "{type:alpha}"
+@using DuoRico.Models
 
 @model DuoRico.Pages_Transactions.IndexModel
 
-<div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="mb-0">Transações</h2>
-        <form method="get" class="row g-3 align-items-end">
-            <input type="hidden" asp-for="Type" />
+<div class="container py-2">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3">
+        <h2 class="text-center text-md-start fw-bold text-secondary">
+            @if (Model.Type == TransactionType.Income)
+            {
+                <i class="bi bi-arrow-up-square text-success"></i>
+                <span>Receitas</span>
+            }
+            else
+            {
+                <i class="bi bi-arrow-down-square text-danger"></i>
+                <span>Despesas</span>
+            }
+        </h2>
 
-            <div class="col-md">
-                <label asp-for="SelectMonth" class="form-label">Mês</label>
-                <select asp-for="SelectMonth" asp-items="Model.MonthOptions" class="form-select"></select>
-            </div>
-            <div class="col-md">
-                <label asp-for="SelectYear" class="form-label">Ano</label>
-                <select asp-for="SelectYear" asp-items="Model.YearOptions" class="form-select"></select>
-            </div>
-            <div class="col-md-auto">
-                <button type="submit" class="btn btn-primary w-100">Filtrar</button>
-            </div>
+        <form method="get" class="d-flex flex-column flex-md-row align-items-md-center gap-2">
+            <select asp-for="SelectMonth" asp-items="Model.MonthOptions" class="form-select"></select>
+            <select asp-for="SelectYear" asp-items="Model.YearOptions" class="form-select"></select>
+            <button type="submit" class="btn btn-outline-secondary w-100 w-md-auto mt-2 mt-md-0">Filtrar</button>
         </form>
-
-        <a asp-page="Create" asp-route-type="@Model.Type" class="btn btn-success">Nova Transação</a>
     </div>
 
-    <table class="table">
+    <div class="d-grid d-md-block my-3">
+        <a asp-page="Create" asp-route-type="@Model.Type" class="btn @(Model.Type == TransactionType.Income ? "btn-success" : "btn-danger")">
+            <i class="bi bi-plus-circle me-1"></i> @(Model.Type == TransactionType.Income ? "Nova Receita" : "Nova Despesa")
+        </a>
+    </div>
+
+    <div class="d-md-none">
+        @if (!Model.TransactionList.Any())
+        {
+            <div class="text-center p-4 border rounded text-muted">Nenhuma transação encontrada.</div>
+        }
+        else
+        {
+            <ul class="list-group">
+                @foreach (var item in Model.TransactionList)
+                {
+                    <li class="list-group-item p-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="me-3">
+                                <h6 class="mb-1 fw-bold text-truncate" style="max-width: 200px;">
+                                    @item.Description
+                                    @if (item.TotalInstallments > 1)
+                                    {
+                                        <span class="fw-normal text-muted">(@item.InstallmentNumber/@item.TotalInstallments)</span>
+                                    }
+                                </h6>
+                                <div>
+                                    <span class="badge @(item.IsPaid ? "bg-success" : "bg-secondary")">
+                                        @(item.IsPaid ? "Pago" : "Não pago")
+                                    </span>
+                                </div>
+                                <small class="text-muted mt-1 d-block">@item.Category -  @item.CreatedAt.ToString("dd/MM/yyyy")</small>
+                            </div>
+
+                            <div class="text-end">
+                                <h6 class="fw-bold @(item.Type == TransactionType.Income ? "text-success" : "text-danger")">
+                                    @item.Amount.ToString("C", new System.Globalization.CultureInfo("pt-BR"))
+                                </h6>
+
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-three-dots-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li><a class="dropdown-item" asp-page="./Edit" asp-route-id="@item.Id" asp-route-type="@Model.Type">Editar</a></li>
+                                        <li><a class="dropdown-item" asp-page="./Delete" asp-route-id="@item.Id" asp-route-type="@Model.Type">Excluir</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                }
+            </ul>
+        }
+    </div>
+
+    <table class="table table-hover align-middle d-none d-md-table">
         <thead>
             <tr>
                 <th>Descrição</th>
-                <th>Valor R$</th>
                 <th>Categoria</th>
-                <th>Pago</th>
-                <th>Parcela Atual</th>
-                <th>Total de Parcelas</th>
-                <th>Criado em</th>
-                <th></th>
+                <th>Status</th>
+                <th class="text-end">Valor</th>
+                <th class="text-center">Ações</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model.TransactionList)
+            @if (!Model.TransactionList.Any())
             {
                 <tr>
-                    <td>@item.Description</td>
-                    <td>@item.Amount.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</td>
-                    <td>@item.Category</td>
-                    <td>@(item.IsPaid ? "Sim" : "Não")</td>
-                    <td>@item.InstallmentNumber</td>
-                    <td>@item.TotalInstallments</td>
-                    <td>@item.CreatedAt.ToString("dd/MM/yyyy")</td>
-                    <td>
-                        <a asp-page="./Edit" asp-route-id="@item.Id" asp-route-type="@Model.Type">Editar</a>
-                        <a asp-page="./Delete" asp-route-id="@item.Id" asp-route-type="@Model.Type">Excluir</a>
-                    </td>
+                    <td colspan="5" class="text-center text-muted p-4">Nenhuma transação encontrada.</td>
                 </tr>
+            }
+            else
+            {
+                @foreach (var item in Model.TransactionList)
+                {
+                    <tr>
+                        <td>
+                            <div class="fw-bold">@item.Description</div>
+                            <small class="text-muted">
+                                @item.CreatedAt.ToString("dd/MM/yyyy")
+                                @if (item.TotalInstallments > 1)
+                                {
+                                    <span class="ms-2">(@item.InstallmentNumber/@item.TotalInstallments)</span>
+                                }
+                            </small>
+                        </td>
+                        <td>@item.Category</td>
+                        <td>
+                            <span class="badge @(item.IsPaid ? "bg-success" : "bg-secondary")">
+                                @(item.IsPaid ? "Pago" : "Não pago")
+                            </span>
+                        </td>
+                        <td class="text-end fw-bold @(item.Type == TransactionType.Income ? "text-success" : "text-danger")">
+                            @item.Amount.ToString("C", new System.Globalization.CultureInfo("pt-BR"))
+                        </td>
+                        <td class="text-center">
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" asp-page="./Edit" asp-route-id="@item.Id" asp-route-type="@Model.Type">Editar</a></li>
+                                    <li><a class="dropdown-item" asp-page="./Delete" asp-route-id="@item.Id" asp-route-type="@Model.Type">Excluir</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                }
             }
         </tbody>
     </table>
