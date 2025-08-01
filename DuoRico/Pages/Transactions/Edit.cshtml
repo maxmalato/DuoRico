@@ -3,7 +3,7 @@
 @model DuoRico.Pages_Transactions.EditModel
 @{
     var isIncome = Model.Type == TransactionType.Income;
-    ViewData["Title"] = "Editar Transação";
+    ViewData["Title"] = "Editar TransaÃ§Ã£o";
     var cardHeaderClass = isIncome ? "bg-success" : "bg-danger";
     var btnClass = isIncome ? "btn-success" : "btn-danger";
 }
@@ -47,7 +47,7 @@
 
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                             <a asp-page="Index" asp-route-type="@Model.Type" class="btn btn-secondary">Cancelar</a>
-                            <input type="submit" value="Salvar Alterações" class="btn @btnClass" />
+                            <input type="submit" value="Salvar AlteraÃ§Ãµes" class="btn @btnClass" />
                         </div>
                     </form>
                 </div>

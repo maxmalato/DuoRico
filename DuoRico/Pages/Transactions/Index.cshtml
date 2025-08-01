@@ -35,7 +35,7 @@
     <div class="d-md-none">
         @if (!Model.TransactionList.Any())
         {
-            <div class="text-center p-4 border rounded text-muted">Nenhuma transaÁ„o encontrada.</div>
+            <div class="text-center p-4 border rounded text-muted">Nenhuma transa√ß√£o encontrada.</div>
         }
         else
         {
@@ -54,7 +54,7 @@
                                 </h6>
                                 <div>
                                     <span class="badge @(item.IsPaid ? "bg-success" : "bg-secondary")">
-                                        @(item.IsPaid ? "Pago" : "N„o pago")
+                                        @(item.IsPaid ? "Pago" : "N√£o pago")
                                     </span>
                                 </div>
                                 <small class="text-muted mt-1 d-block">@item.Category -  @item.CreatedAt.ToString("dd/MM/yyyy")</small>
@@ -93,18 +93,18 @@
     <table class="table table-hover align-middle d-none d-md-table">
         <thead>
             <tr>
-                <th>DescriÁ„o</th>
+                <th>Descri√ß√£o</th>
                 <th>Categoria</th>
                 <th>Status</th>
                 <th class="text-end">Valor</th>
-                <th class="text-center">AÁıes</th>
+                <th class="text-center">A√ß√µes</th>
             </tr>
         </thead>
         <tbody>
             @if (!Model.TransactionList.Any())
             {
                 <tr>
-                    <td colspan="5" class="text-center text-muted p-4">Nenhuma transaÁ„o encontrada.</td>
+                    <td colspan="5" class="text-center text-muted p-4">Nenhuma transa√ß√£o encontrada.</td>
                 </tr>
             }
             else
@@ -125,7 +125,7 @@
                         <td>@item.Category</td>
                         <td>
                             <span class="badge @(item.IsPaid ? "bg-success" : "bg-secondary")">
-                                @(item.IsPaid ? "Pago" : "N„o pago")
+                                @(item.IsPaid ? "Pago" : "N√£o pago")
                             </span>
                         </td>
                         <td class="text-end fw-bold @(item.Type == TransactionType.Income ? "text-success" : "text-danger")">
@@ -160,11 +160,11 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmar Exclus„o</h5>
+                <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmar Exclus√£o</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                Tem certeza de que deseja excluir esta transaÁ„o? Esta aÁ„o n„o pode ser desfeita.
+                Tem certeza de que deseja excluir esta transa√ß√£o? Esta a√ß√£o n√£o pode ser desfeita.
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>

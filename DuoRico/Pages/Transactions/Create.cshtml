@@ -1,10 +1,10 @@
-@page "{type:alpha}"
+ï»¿@page "{type:alpha}"
 @using DuoRico.Models
 
 @model DuoRico.Pages_Transactions.CreateModel
 
 @{
-    // Prepara variáveis para o título e a cor do card
+    // Prepara variÃ¡veis para o tÃ­tulo e a cor do card
     var isIncome = Model.Type == TransactionType.Income;
     ViewData["Title"] = isIncome ? "Nova Receita" : "Nova Despesa";
     var cardHeaderClass = isIncome ? "bg-success" : "bg-danger";
@@ -55,7 +55,7 @@
                                 <span asp-validation-for="Transaction.Year" class="text-danger"></span>
                             </div>
                             <div class="col-md-4 mb-3">
-                                <label asp-for="Transaction.TotalInstallments" class="form-label">Nº de Parcelas</label>
+                                <label asp-for="Transaction.TotalInstallments" class="form-label">NÂº de Parcelas</label>
                                 <select asp-for="Transaction.TotalInstallments" class="form-select" asp-items="Model.InstallmentOptions"></select>
                                 <span asp-validation-for="Transaction.TotalInstallments" class="text-danger"></span>
                             </div>
