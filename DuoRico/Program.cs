@@ -22,7 +22,12 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<ApplicationDbContext>();
-builder.Services.AddRazorPages();
+builder.Services.AddRazorPages()
+    .AddMvcOptions(options =>
+    {
+        // Adiciona a tradução para a mensagem "deve ser um número"
+        options.ModelBindingMessageProvider.SetValueMustBeANumberAccessor((fieldName) => $"O campo {fieldName} deve ser um número.");
+    });
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<TransactionService>();

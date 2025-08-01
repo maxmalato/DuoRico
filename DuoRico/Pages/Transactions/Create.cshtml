@@ -1,18 +1,28 @@
 @page "{type:alpha}"
+@using DuoRico.Models
 
 @model DuoRico.Pages_Transactions.CreateModel
 
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-12 col-md-8 col-lg-6">
-            <div class="card shadow-sm">
-                <div class="card-header bg-success text-white">
-                    <h4 class="mb-0">Nova Transação</h4>
-                </div>
-                <div class="card-body">
-                    <form method="post">
+@{
+    // Prepara variáveis para o título e a cor do card
+    var isIncome = Model.Type == TransactionType.Income;
+    ViewData["Title"] = isIncome ? "Nova Receita" : "Nova Despesa";
+    var cardHeaderClass = isIncome ? "bg-success" : "bg-danger";
+    var btnClass = isIncome ? "btn-success" : "btn-danger";
+}
 
-                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-10 col-lg-8">
+
+            <div class="card shadow-sm">
+                <div class="card-header @cardHeaderClass text-white">
+                    <h4 class="mb-0 text-center">@ViewData["Title"]</h4>
+                </div>
+
+                <div class="card-body p-4">
+                    <form method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
                         <div class="mb-3">
                             <label asp-for="Transaction.Description" class="form-label"></label>
@@ -20,48 +30,50 @@
                             <span asp-validation-for="Transaction.Description" class="text-danger"></span>
                         </div>
 
-                        <div class="mb-3">
-                            <label asp-for="Transaction.Amount" class="form-label"></label>
-                            <input asp-for="Transaction.Amount" class="form-control" type="text" />
-                            <span asp-validation-for="Transaction.Amount" class="text-danger"></span>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Transaction.Amount" class="form-label"></label>
+                                <input asp-for="Transaction.Amount" class="form-control currency-mask" type="text" />
+                                <span asp-validation-for="Transaction.Amount" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Transaction.Category" class="form-label"></label>
+                                <select asp-for="Transaction.Category" class="form-select" asp-items="@(new SelectList(Model.Categories))"></select>
+                                <span asp-validation-for="Transaction.Category" class="text-danger"></span>
+                            </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label asp-for="Transaction.Category" class="form-label"></label>
-                            <select asp-for="Transaction.Category" class="form-control" asp-items="@(new SelectList(Model.Categories))"></select>
-                            <span asp-validation-for="Transaction.Category" class="text-danger"></span>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="Transaction.Month" class="form-label"></label>
+                                <select asp-for="Transaction.Month" class="form-select" asp-items="Model.MonthOptions"></select>
+                                <span asp-validation-for="Transaction.Month" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="Transaction.Year" class="form-label"></label>
+                                <select asp-for="Transaction.Year" class="form-select" asp-items="Model.YearOptions"></select>
+                                <span asp-validation-for="Transaction.Year" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="Transaction.TotalInstallments" class="form-label">Nº de Parcelas</label>
+                                <select asp-for="Transaction.TotalInstallments" class="form-select" asp-items="Model.InstallmentOptions"></select>
+                                <span asp-validation-for="Transaction.TotalInstallments" class="text-danger"></span>
+                            </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label asp-for="Transaction.Month" class="form-label"></label>
-                            <select asp-for="Transaction.Month" class="form-control" asp-items="Model.MonthOptions"></select>
-                            <span asp-validation-for="Transaction.Month" class="text-danger"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="Transaction.Year" class="form-label"></label>
-                            <select asp-for="Transaction.Year" class="form-control" asp-items="Model.YearOptions"></select>
-                            <span asp-validation-for="Transaction.Year" class="text-danger"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="Transaction.TotalInstallments" class="form-label"></label>
-                            <select asp-for="Transaction.TotalInstallments" class="form-control" asp-items="Model.InstallmentOptions"></select>
-                            <span asp-validation-for="Transaction.TotalInstallments" class="text-danger"></span>
-                        </div>
-
-                        <div class="form-check mb-3">
+                        <div class="form-check mb-4">
                             <input class="form-check-input" asp-for="Transaction.IsPaid" />
                             <label class="form-check-label" asp-for="Transaction.IsPaid"></label>
                         </div>
 
-                        <div class="d-grid gap-2">
-                            <input type="submit" value="Criar" class="btn btn-success" />
-                            <a asp-page="Index" asp-route-type="@Model.Type" class="btn btn-secondary">Voltar</a>
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-page="Index" asp-route-type="@Model.Type" class="btn btn-secondary">Cancelar</a>
+                            <input type="submit" value="Criar" class="btn @btnClass" />
                         </div>
                     </form>
                 </div>
             </div>
+
         </div>
     </div>
 </div>

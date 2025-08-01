@@ -13,24 +13,24 @@ public class DeleteModel : TransactionPageModel
     {
     }
 
-    public async Task<IActionResult> OnGetAsync(Guid? id, string type)
-    {
-        if (id == null) return NotFound("Id não encontrado.");
+    //public async Task<IActionResult> OnGetAsync(Guid? id, string type)
+    //{
+    //    if (id == null) return NotFound("Id não encontrado.");
 
-        var (validationResult, loggedInUser) = await ValidateAndLoadContextAsync(type);
+    //    var (validationResult, loggedInUser) = await ValidateAndLoadContextAsync(type);
 
-        if (validationResult != null) return validationResult;
+    //    if (validationResult != null) return validationResult;
 
-        Categories = TransactionCategoryHelper.GetCategories(Type);
+    //    Categories = TransactionCategoryHelper.GetCategories(Type);
 
-        Transaction = await _context.Transactions
-            .FirstOrDefaultAsync(t => t.Id == id && t.User.CoupleId == loggedInUser.CoupleId);
+    //    Transaction = await _context.Transactions
+    //        .FirstOrDefaultAsync(t => t.Id == id && t.User.CoupleId == loggedInUser.CoupleId);
 
-        if (Transaction == null)
-            return NotFound("Transação não encontrada ou você não tem permissão para editá-la.");
+    //    if (Transaction == null)
+    //        return NotFound("Transação não encontrada ou você não tem permissão para editá-la.");
 
-        return Page();
-    }
+    //    return Page();
+    //}
 
     public async Task<IActionResult> OnPostAsync(Guid? id, string type)
     {

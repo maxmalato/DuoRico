@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 
 namespace DuoRico.Pages_Transactions;
 
@@ -24,6 +25,8 @@ public class IndexModel : TransactionPageModel
     [BindProperty(SupportsGet = true)]
     public int SelectMonth { get; set; }
 
+    public string SelectedMonthName { get; private set; }
+
     [BindProperty(SupportsGet = true)]
     public int SelectYear { get; set; }
 
@@ -41,6 +44,9 @@ public class IndexModel : TransactionPageModel
 
         MonthOptions = _dropdownService.GetMonthOptions();
         YearOptions = _dropdownService.GetYearOptions(DateTime.Now.Year, 5);
+
+        var culture = new CultureInfo("pt-BR");
+        SelectedMonthName = culture.TextInfo.ToTitleCase(new DateTime(SelectYear, SelectMonth, 1).ToString("MMMM", culture));
 
         TransactionList = await _context.Transactions
             .Include(t => t.User)

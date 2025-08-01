@@ -9,18 +9,18 @@
             @if (Model.Type == TransactionType.Income)
             {
                 <i class="bi bi-arrow-up-circle text-success"></i>
-                <span>Receitas</span>
+                <span>Receitas de @Model.SelectedMonthName</span>
             }
             else
             {
                 <i class="bi bi-arrow-down-circle text-danger"></i>
-                <span>Despesas</span>
+                <span>Despesas de @Model.SelectedMonthName</span>
             }
         </h2>
 
         <form method="get" class="d-flex flex-column flex-md-row align-items-md-center gap-2">
-            <select asp-for="SelectMonth" asp-items="Model.MonthOptions" class="form-select"></select>
-            <select asp-for="SelectYear" asp-items="Model.YearOptions" class="form-select"></select>
+            <select asp-for="SelectMonth" asp-items="Model.MonthOptions" class="form-select w-auto"></select>
+            <select asp-for="SelectYear" asp-items="Model.YearOptions" class="form-select w-auto"></select>
             <button type="submit" class="btn btn-outline-secondary w-100 w-md-auto mt-2 mt-md-0">Filtrar</button>
         </form>
     </div>
@@ -31,6 +31,7 @@
         </a>
     </div>
 
+    @* Modo Mobile *@
     <div class="d-md-none">
         @if (!Model.TransactionList.Any())
         {
@@ -70,7 +71,14 @@
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end">
                                         <li><a class="dropdown-item" asp-page="./Edit" asp-route-id="@item.Id" asp-route-type="@Model.Type">Editar</a></li>
-                                        <li><a class="dropdown-item" asp-page="./Delete" asp-route-id="@item.Id" asp-route-type="@Model.Type">Excluir</a></li>
+                                        <li>
+                                            <button type="button" class="dropdown-item text-danger delete-btn"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#confirmDeleteModal"
+                                                    data-id="@item.Id">
+                                                Excluir
+                                            </button>
+                                        </li>
                                     </ul>
                                 </div>
                             </div>
@@ -81,6 +89,7 @@
         }
     </div>
 
+    @* Modo Desktop *@
     <table class="table table-hover align-middle d-none d-md-table">
         <thead>
             <tr>
@@ -129,7 +138,14 @@
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end">
                                     <li><a class="dropdown-item" asp-page="./Edit" asp-route-id="@item.Id" asp-route-type="@Model.Type">Editar</a></li>
-                                    <li><a class="dropdown-item" asp-page="./Delete" asp-route-id="@item.Id" asp-route-type="@Model.Type">Excluir</a></li>
+                                    <li>
+                                        <button type="button" class="dropdown-item text-danger delete-btn"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#confirmDeleteModal"
+                                                data-id="@item.Id">
+                                            Excluir
+                                        </button>
+                                    </li>
                                 </ul>
                             </div>
                         </td>
@@ -139,3 +155,52 @@
         </tbody>
     </table>
 </div>
+
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmar Exclusão</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Tem certeza de que deseja excluir esta transação? Esta ação não pode ser desfeita.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+
+                <form id="deleteForm" method="post">
+                    <button type="submit" class="btn btn-danger">Sim, Excluir</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        
+        document.addEventListener('DOMContentLoaded', function () {
+
+            
+            const deleteForm = document.getElementById('deleteForm');
+
+            
+            const deleteButtons = document.querySelectorAll('.delete-btn');
+
+            
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    
+                    const transactionId = this.dataset.id;
+
+                    const transactionType = '@Model.Type.ToString().ToLower()';
+
+                    const actionUrl = `/Transactions/Delete/${transactionId}/${transactionType}`;
+
+                    deleteForm.setAttribute('action', actionUrl);
+                });
+            });
+        });
+    </script>
+}
