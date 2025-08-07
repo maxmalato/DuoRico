@@ -49,4 +49,17 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <!-- Dinâmica do botão "Entrar" para ser desativado assim que for clicado-->
+    <script>
+        const form = document.getElementById("registerForm");
+        const submitButton = document.getElementById("registerSubmit");
+
+        form.addEventListener("submit", function() {
+            // Desabilita o botão de submit
+            submitButton.disabled = true;
+            // Muda o texto do botão para "Entrando..."
+            submitButton.textContent = "Cadastrando...";
+        });
+    </script>
 }

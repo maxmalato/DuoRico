@@ -3,7 +3,7 @@
 
 @{
     ViewData["Title"] = "Login";
-    
+
     Layout = "_AuthLayout.cshtml";
 }
 
@@ -40,4 +40,17 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <!-- Dinâmica do botão "Entrar" para ser desativado assim que for clicado-->
+    <script>
+        const form = document.getElementById("account");
+        const submitButton = document.getElementById("login-submit");
+
+        form.addEventListener("submit", function() {
+            // Desabilita o botão de submit
+            submitButton.disabled = true;
+            // Muda o texto do botão para "Entrando..."
+            submitButton.textContent = "Entrando...";
+        });
+    </script>
 }
