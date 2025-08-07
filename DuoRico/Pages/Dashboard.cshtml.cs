@@ -67,6 +67,7 @@ public class DashboardModel : PageModel
         // Seleciona as 3 últimas despesas
         Last3Expenses = transactions
             .Where(t => t.Type == TransactionType.Expense)
+            .OrderBy(t => t.IsPaid)
             .OrderByDescending(t => t.CreatedAt)
             .Take(3)
             .ToList();

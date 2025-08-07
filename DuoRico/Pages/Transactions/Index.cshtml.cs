@@ -55,7 +55,8 @@ public class IndexModel : TransactionPageModel
                     t.Type == Type &&
                     t.Month == SelectMonth && 
                     t.Year == SelectYear)
-            .OrderByDescending(t => t.CreatedAt)
+            .OrderBy(t => t.IsPaid)
+            .ThenByDescending(t => t.CreatedAt)
             .ToListAsync();
 
         return Page();
