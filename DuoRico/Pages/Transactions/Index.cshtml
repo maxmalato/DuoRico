@@ -32,19 +32,28 @@
     </div>
 
     @* Área de pesquisa *@
-    <div class="input-group mb-3">
-        <span class="input-group-text" id="search-addon"><i class="bi bi-search"></i></span>
-        <input type="search" id="searchInput" class="form-control" placeholder="Pesquisar por descrição ou categoria..." aria-label="Pesquisar" aria-describedby="search-addon">
+    <div class="row justify-content-center mb-3">
+        <div class="col-md-8 col-lg-6">
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                <input type="search" id="searchInput" class="form-control" placeholder="Pesquisar por descrição ou categoria..." />
+            </div>
+        </div>
     </div>
 
     @* Modo Mobile *@
-    <div class="d-md-none">
+    <div class="d-md-none" id="mobile-list-container">
         @if (!Model.TransactionList.Any())
         {
             <div class="text-center p-4 border rounded text-muted">Nenhuma transação encontrada.</div>
         }
         else
         {
+            <div class="no-results-message d-none text-center text-muted p-4 border rounded">
+                <i class="bi bi-exclamation-circle fs-4 d-block mb-2"></i>
+                Nenhuma transação encontrada com o termo pesquisado.
+            </div>
+
             <ul class="list-group">
                 @foreach (var item in Model.TransactionList)
                 {
@@ -92,15 +101,11 @@
                     </li>
                 }
             </ul>
-
-            <div id="noResultsMessage" class="text-center p-4 border rounded text-muted" style="display: none;">
-                Nenhuma transação encontrada com o termo pesquisado.
-            </div>
         }
     </div>
 
     @* Modo Desktop *@
-    <table class="table table-hover align-middle d-none d-md-table">
+    <table class="table table-hover align-middle d-none d-md-table" id="desktop-table-container">
         <thead>
             <tr>
                 <th>Descrição</th>
@@ -163,6 +168,11 @@
                 }
             }
 
+            <tr class="no-results-message d-none">
+                <td colspan="5" class="text-center text-muted p-4">
+                    Nenhuma transação encontrada com o termo pesquisado.
+                </td>
+            </tr>
         </tbody>
     </table>
 </div>
@@ -212,39 +222,47 @@
         });
     </script>
 
-    @* Modal de pesquisa de uma transação *@
+    @* Área de pesquisa de uma transação *@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Pega os elementos da página
             const searchInput = document.getElementById('searchInput');
-            const itemsToFilter = document.querySelectorAll('.transaction-item');
-            const noResultsMessage = document.getElementById('noResultsMessage');
+            const mobileContainer = document.getElementById('mobile-list-container');
+            const desktopContainer = document.getElementById('desktop-table-container');
 
-            // Adiciona um "ouvinte" que dispara a cada tecla digitada no campo de busca
             searchInput.addEventListener('input', function () {
                 const searchTerm = this.value.toLowerCase().trim();
-                let visibleItemsCount = 0;
 
-                // Passa por cada item da lista (seja <li> ou <tr>)
-                itemsToFilter.forEach(function (item) {
-                    // Pega o texto da descrição e da categoria do item
-                    const itemText = item.textContent.toLowerCase();
+                // Função que filtra uma lista (seja mobile ou desktop)
+                const filterList = (container) => {
+                    const items = container.querySelectorAll('.transaction-item');
+                    const noResultsMessage = container.querySelector('.no-results-message');
+                    const tableHead = container.querySelector('thead'); // Apenas para a tabela
 
-                    // Verifica se o texto do item inclui o termo pesquisado
-                    if (itemText.includes(searchTerm)) {
-                        item.style.display = ''; // Mostra o item
-                        visibleItemsCount++;
-                    } else {
-                        item.style.display = 'none'; // Esconde o item
+                    let visibleItemsCount = 0;
+
+                    items.forEach(item => {
+                        const itemText = item.textContent.toLowerCase();
+                        const isVisible = itemText.includes(searchTerm);
+                        item.style.display = isVisible ? '' : 'none';
+                        if (isVisible) visibleItemsCount++;
+                    });
+
+                    const showNoResults = visibleItemsCount === 0 && searchTerm !== '';
+
+                    // Mostra/esconde a mensagem de "nenhum resultado"
+                    if (noResultsMessage) {
+                        noResultsMessage.classList.toggle('d-none', !showNoResults);
                     }
-                });
 
-                // Mostra ou esconde a mensagem de "nenhum resultado"
-                if (visibleItemsCount === 0 && searchTerm !== '') {
-                    noResultsMessage.style.display = 'block';
-                } else {
-                    noResultsMessage.style.display = 'none';
-                }
+                    // Mostra/esconde o cabeçalho da tabela no desktop
+                    if (tableHead) {
+                        tableHead.style.display = showNoResults ? 'none' : '';
+                    }
+                };
+
+                // Executa a função de filtro para ambos os layouts
+                filterList(mobileContainer);
+                filterList(desktopContainer);
             });
         });
     </script>
