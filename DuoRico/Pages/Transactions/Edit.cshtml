@@ -3,7 +3,7 @@
 @model DuoRico.Pages_Transactions.EditModel
 @{
     var isIncome = Model.Type == TransactionType.Income;
-    ViewData["Title"] = "Editar Transação";
+    ViewData["Title"] = isIncome ? "Editar Receita" : "Editar Despesa";
     var cardHeaderClass = isIncome ? "bg-success" : "bg-danger";
     var btnClass = isIncome ? "btn-success" : "btn-danger";
 }
