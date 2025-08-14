@@ -29,24 +29,39 @@
         </form>
     </div>
 
-    <div class="d-grid d-md-block my-3">
+    <div class="d-grid d-md-block my-3 ">
         <a asp-page="Create" asp-route-type="@Model.Type" class="btn @(Model.Type == TransactionType.Income ? "btn-success" : "btn-danger")">
             <i class="bi bi-plus-circle me-1"></i> @(Model.Type == TransactionType.Income ? "Nova Receita" : "Nova Despesa")
         </a>
     </div>
 
+    @* Área de pesquisa *@
+    <div class="row justify-content-center mb-3">
+        <div class="col-md-8 col-lg-6">
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                <input type="search" id="searchInput" class="form-control" placeholder="Pesquisar por descrição ou categoria..." />
+            </div>
+        </div>
+    </div>
+
     @* Modo Mobile *@
-    <div class="d-md-none">
+    <div class="d-md-none" id="mobile-list-container">
         @if (!Model.TransactionList.Any())
         {
             <div class="text-center p-4 border rounded text-muted">Nenhuma transação encontrada.</div>
         }
         else
         {
+            <div class="no-results-message d-none text-center text-muted p-4 border rounded">
+                <i class="bi bi-exclamation-circle fs-4 d-block mb-2"></i>
+                Nenhuma transação encontrada com o termo pesquisado.
+            </div>
+
             <ul class="list-group">
                 @foreach (var item in Model.TransactionList)
                 {
-                    <li class="list-group-item p-3">
+                    <li class="list-group-item p-3 transaction-item">
                         <div class="d-flex justify-content-between align-items-start">
                             <div class="me-3">
                                 <h6 class="mb-1 fw-bold text-truncate" style="max-width: 200px;">
@@ -94,7 +109,7 @@
     </div>
 
     @* Modo Desktop *@
-    <table class="table table-hover align-middle d-none d-md-table">
+    <table class="table table-hover align-middle d-none d-md-table" id="desktop-table-container">
         <thead>
             <tr>
                 <th>Descrição</th>
@@ -115,7 +130,7 @@
             {
                 @foreach (var item in Model.TransactionList)
                 {
-                    <tr>
+                    <tr class="transaction-item">
                         <td>
                             <div class="fw-bold">@item.Description</div>
                             <small class="text-muted">
@@ -156,6 +171,12 @@
                     </tr>
                 }
             }
+
+            <tr class="no-results-message d-none">
+                <td colspan="5" class="text-center text-muted p-4">
+                    Nenhuma transação encontrada com o termo pesquisado.
+                </td>
+            </tr>
         </tbody>
     </table>
 </div>
@@ -182,20 +203,17 @@
 </div>
 
 @section Scripts {
+    @* Modal de exclusão de uma transação *@
     <script>
-        
         document.addEventListener('DOMContentLoaded', function () {
 
-            
             const deleteForm = document.getElementById('deleteForm');
 
-            
             const deleteButtons = document.querySelectorAll('.delete-btn');
 
-            
             deleteButtons.forEach(button => {
                 button.addEventListener('click', function () {
-                    
+
                     const transactionId = this.dataset.id;
 
                     const transactionType = '@Model.Type.ToString().ToLower()';
@@ -204,6 +222,51 @@
 
                     deleteForm.setAttribute('action', actionUrl);
                 });
+            });
+        });
+    </script>
+
+    @* Área de pesquisa de uma transação *@
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('searchInput');
+            const mobileContainer = document.getElementById('mobile-list-container');
+            const desktopContainer = document.getElementById('desktop-table-container');
+
+            searchInput.addEventListener('input', function () {
+                const searchTerm = this.value.toLowerCase().trim();
+
+                // Função que filtra uma lista (seja mobile ou desktop)
+                const filterList = (container) => {
+                    const items = container.querySelectorAll('.transaction-item');
+                    const noResultsMessage = container.querySelector('.no-results-message');
+                    const tableHead = container.querySelector('thead'); // Apenas para a tabela
+
+                    let visibleItemsCount = 0;
+
+                    items.forEach(item => {
+                        const itemText = item.textContent.toLowerCase();
+                        const isVisible = itemText.includes(searchTerm);
+                        item.style.display = isVisible ? '' : 'none';
+                        if (isVisible) visibleItemsCount++;
+                    });
+
+                    const showNoResults = visibleItemsCount === 0 && searchTerm !== '';
+
+                    // Mostra/esconde a mensagem de "nenhum resultado"
+                    if (noResultsMessage) {
+                        noResultsMessage.classList.toggle('d-none', !showNoResults);
+                    }
+
+                    // Mostra/esconde o cabeçalho da tabela no desktop
+                    if (tableHead) {
+                        tableHead.style.display = showNoResults ? 'none' : '';
+                    }
+                };
+
+                // Executa a função de filtro para ambos os layouts
+                filterList(mobileContainer);
+                filterList(desktopContainer);
             });
         });
     </script>
