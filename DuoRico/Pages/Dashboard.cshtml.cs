@@ -42,12 +42,16 @@ public class DashboardModel : PageModel
 
     public async Task<IActionResult> OnGetAsync()
     {
-        if (SelectMonth == 0) SelectMonth = DateTime.Now.Month;
-        if (SelectYear == 0) SelectYear = DateTime.Now.Year;
+        // Filtro de um mês após o atual mês
+        if (SelectMonth == 0 || SelectYear == 0)
+        {
+            var nextMonthDate = DateTime.Now.AddMonths(1);
+            SelectMonth = nextMonthDate.Month;
+            SelectYear = nextMonthDate.Year;
+        }
 
         var culture = new CultureInfo("pt-BR");
         SelectedMonthName = culture.TextInfo.ToTitleCase(new DateTime(SelectYear, SelectMonth, 1).ToString("MMMM", culture));
-
 
         MonthOptions = _dropdownService.GetMonthOptions();
         YearOptions = _dropdownService.GetYearOptions(DateTime.Now.Year, 5);

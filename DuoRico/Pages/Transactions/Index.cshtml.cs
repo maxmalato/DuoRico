@@ -16,7 +16,7 @@ public class IndexModel : TransactionPageModel
 
     public IndexModel(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IDropdownService dropdownService)
         : base(context, userManager)
-    { 
+    {
         _dropdownService = dropdownService;
     }
 
@@ -39,8 +39,13 @@ public class IndexModel : TransactionPageModel
 
         if (validationResult != null) return validationResult;
 
-        if (SelectMonth == 0) SelectMonth = DateTime.Now.Month;
-        if (SelectYear == 0) SelectYear = DateTime.Now.Year;
+        //Filtro de um mês após o atual mês
+        if (SelectMonth == 0 || SelectYear == 0)
+        {
+            var nextMonthDate = DateTime.Now.AddMonths(1);
+            SelectMonth = nextMonthDate.Month;
+            SelectYear = nextMonthDate.Year;
+        }
 
         MonthOptions = _dropdownService.GetMonthOptions();
         YearOptions = _dropdownService.GetYearOptions(DateTime.Now.Year, 5);
@@ -51,9 +56,9 @@ public class IndexModel : TransactionPageModel
         TransactionList = await _context.Transactions
             .Include(t => t.User)
             .Where(
-                    t => t.User.CoupleId == loggedInUser.CoupleId && 
+                    t => t.User.CoupleId == loggedInUser.CoupleId &&
                     t.Type == Type &&
-                    t.Month == SelectMonth && 
+                    t.Month == SelectMonth &&
                     t.Year == SelectYear)
             .OrderBy(t => t.IsPaid)
             .ThenByDescending(t => t.CreatedAt)

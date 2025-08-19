@@ -32,11 +32,13 @@ public class CreateModel : TransactionPageModel
         YearOptions = _dropdownService.GetYearOptions(DateTime.Now.Year, 5);
         InstallmentOptions = _dropdownService.GetInstallmentOptions(48);
 
+        var nextMonth = DateTime.Now.AddMonths(1);
+
         // Inicilizar com o mês e ano atuais
         Transaction = new Transaction
         {
-            Month = DateTime.Now.Month,
-            Year = DateTime.Now.Year,
+            Month = nextMonth.Month,
+            Year = nextMonth.Year,
         };
 
         return result ?? Page();
