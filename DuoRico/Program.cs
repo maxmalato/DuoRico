@@ -1,10 +1,15 @@
 using DuoRico.Data;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
 using DuoRico.Services;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+});
 
 var supportedCultures = new[] { new CultureInfo("pt-BR") };
 builder.Services.Configure<RequestLocalizationOptions>(options =>
@@ -34,11 +39,7 @@ builder.Services.AddScoped<IDropdownService, DropdownService>();
 
 var app = builder.Build();
 
-var port = Environment.GetEnvironmentVariable("PORT");
-if (!string.IsNullOrEmpty(port))
-{
-    app.Urls.Add($"http://*:{port}");
-}
+app.UseForwardedHeaders();
 
 if (app.Environment.IsDevelopment())
 {
@@ -47,7 +48,6 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseExceptionHandler("/Error");
-
     app.UseHsts();
 }
 
