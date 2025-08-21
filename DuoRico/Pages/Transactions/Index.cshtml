@@ -61,45 +61,45 @@
             <ul class="list-group">
                 @foreach (var item in Model.TransactionList)
                 {
-                    <li class="list-group-item p-3 transaction-item">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div class="me-3">
-                                <h6 class="mb-1 fw-bold text-truncate" style="max-width: 200px;">
-                                    @item.Description
-                                    @if (item.TotalInstallments > 1)
-                                    {
-                                        <span class="fw-normal text-muted">(@item.InstallmentNumber/@item.TotalInstallments)</span>
-                                    }
-                                </h6>
-                                <div>
-                                    <span class="badge @(item.IsPaid ? "bg-success" : "bg-secondary")">
-                                        @(item.IsPaid ? "Pago" : "Não pago")
-                                    </span>
-                                </div>
-                                <small class="text-muted mt-1 d-block">@item.Category -  @item.CreatedAt.ToString("dd/MM/yyyy")</small>
-                            </div>
+                    <li class="list-group-item transaction-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="fw-bold text-truncate">
+                                @item.Description
+                                @if (item.TotalInstallments > 1)
+                                {
+                                    <span class="fw-normal text-muted">(@item.InstallmentNumber/@item.TotalInstallments)</span>
+                                }
+                            </h6>
 
-                            <div class="text-end">
-                                <h6 class="fw-bold @(item.Type == TransactionType.Income ? "text-success" : "text-danger")">
-                                    @item.Amount.ToString("C", new System.Globalization.CultureInfo("pt-BR"))
-                                </h6>
+                            <h6 class="fw-bold @(item.Type == TransactionType.Income ? "text-success" : "text-danger")">
+                                @item.Amount.ToString("C", new System.Globalization.CultureInfo("pt-BR"))
+                            </h6>
+                        </div>
 
-                                <div class="dropdown">
-                                    <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="bi bi-three-dots-vertical"></i>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end">
-                                        <li><a class="dropdown-item" asp-page="./Edit" asp-route-id="@item.Id" asp-route-type="@Model.Type">Editar</a></li>
-                                        <li>
-                                            <button type="button" class="dropdown-item text-danger delete-btn"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#confirmDeleteModal"
-                                                    data-id="@item.Id">
-                                                Excluir
-                                            </button>
-                                        </li>
-                                    </ul>
-                                </div>
+                        <div class="my-1">
+                            <span class="badge @(item.IsPaid ? "bg-success" : "bg-secondary")">
+                                @(item.IsPaid ? "Pago" : "Não pago")
+                            </span>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted d-block">@item.Category - @item.CreatedAt.ToString("dd/MM/yyyy")</small>
+
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" asp-page="./Edit" asp-route-id="@item.Id" asp-route-type="@Model.Type">Editar</a></li>
+                                    <li>
+                                        <button type="button" class="dropdown-item text-danger delete-btn"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#confirmDeleteModal"
+                                                data-id="@item.Id">
+                                            Excluir
+                                        </button>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
                     </li>
