@@ -13,12 +13,17 @@ namespace DuoRico.Pages_Transactions;
 public class IndexModel : TransactionPageModel
 {
     private readonly IDropdownService _dropdownService;
+    private readonly TransactionService _transactionService;
 
-    public IndexModel(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IDropdownService dropdownService)
+    public IndexModel(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IDropdownService dropdownService, TransactionService transactionService)
         : base(context, userManager)
     {
         _dropdownService = dropdownService;
+        _transactionService = transactionService;
     }
+
+    public decimal TotalIncomeForPeriod { get; set; }
+    public decimal TotalExpenseForPeriod { get; set; }
 
     public IList<Transaction> TransactionList { get; set; } = default!;
 
@@ -46,6 +51,10 @@ public class IndexModel : TransactionPageModel
             SelectMonth = nextMonthDate.Month;
             SelectYear = nextMonthDate.Year;
         }
+
+        var summary = await _transactionService.GetSummaryForPeriodAsync(loggedInUser.CoupleId.Value, SelectMonth, SelectYear);
+        TotalIncomeForPeriod = summary.TotalIncome;
+        TotalExpenseForPeriod = summary.TotalExpense;
 
         MonthOptions = _dropdownService.GetMonthOptions();
         YearOptions = _dropdownService.GetYearOptions(DateTime.Now.Year, 5);

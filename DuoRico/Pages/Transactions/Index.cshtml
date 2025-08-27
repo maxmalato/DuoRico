@@ -35,6 +35,7 @@
         </a>
     </div>
 
+
     @* Área de pesquisa *@
     <div class="row justify-content-center mb-3">
         <div class="col-md-8 col-lg-6">
@@ -44,6 +45,19 @@
             </div>
         </div>
     </div>
+
+    @* Total da Transação em determinado período *@
+    <div class="d-flex justify-content-center justify-content-lg-start">
+        <div class="badge p-2 fs-6 mb-3 shadow-sm @(Model.Type == TransactionType.Income ? "border border-success text-success" : "border border-danger text-danger")">
+            <span class="fw-light">Total da @(Model.Type == TransactionType.Income ? "Receita" : "Despesa"): </span>
+            <span>
+                @((Model.Type == TransactionType.Income ?
+                                Model.TotalIncomeForPeriod :
+                                Model.TotalExpenseForPeriod).ToString("C", new System.Globalization.CultureInfo("pt-BR")))
+            </span>
+        </div>
+    </div>
+
 
     @* Modo Mobile *@
     <div class="d-md-none" id="mobile-list-container">

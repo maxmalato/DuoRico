@@ -2,7 +2,6 @@
 using DuoRico.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 
 namespace DuoRico.Services;
 
@@ -105,5 +104,38 @@ public class TransactionService
                         t.CreatedAt.Month == month &&
                         t.CreatedAt.Year == year)
             .ToListAsync();
+    }
+
+    // Soma dos valores das transações do casal autenticado por filtro (mês e ano)
+    public class TransactionSummary
+    {
+        public decimal TotalIncome { get; set; }
+        public decimal TotalExpense { get; set; }
+        public decimal Balance => TotalIncome - TotalExpense;
+    }
+
+    public async Task<TransactionSummary> GetSummaryForPeriodAsync(Guid coupleId, int month, int year)
+    {
+        // Calcula a soma das receitas diretamente no banco de dados
+        var totalIncome = await _context.Transactions
+            .Where(t => t.User.CoupleId == coupleId &&
+                        t.Type == TransactionType.Income &&
+                        t.Month == month &&
+                        t.Year == year)
+            .SumAsync(t => t.Amount);
+
+        // Calcula a soma das despesas diretamente no banco de dados
+        var totalExpense = await _context.Transactions
+            .Where(t => t.User.CoupleId == coupleId &&
+                        t.Type == TransactionType.Expense &&
+                        t.Month == month &&
+                        t.Year == year)
+            .SumAsync(t => t.Amount);
+
+        return new TransactionSummary
+        {
+            TotalIncome = totalIncome,
+            TotalExpense = totalExpense
+        };
     }
 }
