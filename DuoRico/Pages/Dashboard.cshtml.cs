@@ -17,12 +17,14 @@ public class DashboardModel : PageModel
     private readonly ApplicationDbContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IDropdownService _dropdownService;
+    private readonly TransactionService _transactionService;
 
-    public DashboardModel(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IDropdownService dropdownService)
+    public DashboardModel(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IDropdownService dropdownService, TransactionService transactionService)
     {
         _context = context;
         _userManager = userManager;
         _dropdownService = dropdownService;
+        _transactionService = transactionService;
     }
 
     public decimal CurrentMonthIncome { get; set; }
@@ -59,22 +61,18 @@ public class DashboardModel : PageModel
         var loggedInUser = await _userManager.GetUserAsync(User);
         if (loggedInUser == null || loggedInUser.CoupleId == null) return Challenge();
 
-        var transactions = await _context.Transactions
-            .Where(t => t.User.CoupleId == loggedInUser.CoupleId &&
-                        t.Month == SelectMonth &&
-                        t.Year == SelectYear)
-            .ToListAsync();
+        // Calcula a soma das receitas e despesas diretamente no banco de dados
+        var summary = await _transactionService.GetSummaryForPeriodAsync(loggedInUser.CoupleId.Value, SelectMonth, SelectYear);
+        CurrentMonthIncome = summary.TotalIncome;
+        CurrentMonthExpense = summary.TotalExpense;
 
-        CurrentMonthIncome = transactions.Where(t => t.Type == TransactionType.Income).Sum(t => t.Amount);
-        CurrentMonthExpense = transactions.Where(t => t.Type == TransactionType.Expense).Sum(t => t.Amount);
-
-        // Seleciona as 3 últimas despesas
-        Last3Expenses = transactions
-            .Where(t => t.Type == TransactionType.Expense)
+        // Busca as últimas 3 despesas do casal autenticado
+        Last3Expenses = await _context.Transactions
+            .Where(t => t.Type == TransactionType.Expense && t.Month == SelectMonth && t.Year == SelectYear)
             .OrderBy(t => t.IsPaid)
             .OrderByDescending(t => t.CreatedAt)
             .Take(3)
-            .ToList();
+            .ToListAsync();
 
         return Page();
     }
