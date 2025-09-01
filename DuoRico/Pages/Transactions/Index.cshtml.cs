@@ -24,7 +24,8 @@ public class IndexModel : TransactionPageModel
 
     public decimal TotalIncomeForPeriod { get; set; }
     public decimal TotalExpenseForPeriod { get; set; }
-
+    public decimal AmountPaid { get; set; }
+    public decimal AmountUnpaid { get; set; }
     public IList<Transaction> TransactionList { get; set; } = default!;
 
     [BindProperty(SupportsGet = true)]
@@ -61,6 +62,28 @@ public class IndexModel : TransactionPageModel
 
         var culture = new CultureInfo("pt-BR");
         SelectedMonthName = culture.TextInfo.ToTitleCase(new DateTime(SelectYear, SelectMonth, 1).ToString("MMMM", culture));
+
+        // Valres pagos
+        AmountPaid = await _context.Transactions
+            .Include(t => t.User)
+            .Where(
+                    t => t.User.CoupleId == loggedInUser.CoupleId &&
+                    t.Type == Type &&
+                    t.Month == SelectMonth &&
+                    t.Year == SelectYear &&
+                    t.IsPaid)
+            .SumAsync(t => t.Amount);
+
+        // Valores não pagos
+        AmountUnpaid = await _context.Transactions
+            .Include(t => t.User)
+            .Where(
+                    t => t.User.CoupleId == loggedInUser.CoupleId &&
+                    t.Type == Type &&
+                    t.Month == SelectMonth &&
+                    t.Year == SelectYear &&
+                    !t.IsPaid)
+            .SumAsync(t => t.Amount);
 
         TransactionList = await _context.Transactions
             .Include(t => t.User)
