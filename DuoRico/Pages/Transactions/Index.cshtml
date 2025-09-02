@@ -1,7 +1,8 @@
 @page "{type:alpha}"
 @using DuoRico.Models
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
 
-@model DuoRico.Pages_Transactions.IndexModel
+@model IndexModel
 
 @{
     ViewData["Title"] = (Model.Type == TransactionType.Income ? "Receitas" : "Despesas");
@@ -111,9 +112,9 @@
                         </div>
 
                         <div class="my-1">
-                            <span class="badge @(item.IsPaid ? "bg-success" : "bg-secondary")">
+                            <a href="#" class="badge ispaid-toggle @(item.IsPaid ? "bg-success" : "bg-secondary")" data-id="@item.Id">
                                 @(item.IsPaid ? "Pago" : "Não pago")
-                            </span>
+                            </a>
                         </div>
 
                         <div class="d-flex justify-content-between align-items-center">
@@ -177,9 +178,9 @@
                         </td>
                         <td>@item.Category</td>
                         <td>
-                            <span class="badge @(item.IsPaid ? "bg-success" : "bg-secondary")">
+                            <a href="#" class="badge ispaid-toggle @(item.IsPaid ? "bg-success" : "bg-secondary")" data-id="@item.Id">
                                 @(item.IsPaid ? "Pago" : "Não pago")
-                            </span>
+                            </a>
                         </td>
                         <td class="text-end fw-bold @(item.Type == TransactionType.Income ? "text-success" : "text-danger")">
                             @item.Amount.ToString("C", new System.Globalization.CultureInfo("pt-BR"))
@@ -301,6 +302,58 @@
                 // Executa a função de filtro para ambos os layouts
                 filterList(mobileContainer);
                 filterList(desktopContainer);
+            });
+        });
+    </script>
+
+    @* Atualização do status Pago ou Não Pago *@
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const csrfToken = '@Xsrf.GetAndStoreTokens(HttpContext).RequestToken';
+
+            const toggleButtons = document.querySelectorAll('.ispaid-toggle');
+
+            toggleButtons.forEach(button => {
+                button.addEventListener('click', function (event) {
+                    event.preventDefault();
+
+                    const transactionId = this.dataset.id;
+                    const transactionType = '@Model.Type.ToString().ToLower()';
+
+                    const url = `/Transactions/Index/${transactionType}?handler=ToggleIsPaid`;
+
+                    fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'RequestVerificationToken': csrfToken,
+                            'Content-Type': 'application/json'
+                        },
+                        // Envia o ID no corpo da requisição
+                        body: JSON.stringify({ id: transactionId })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Erro na requisição');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Atualiza o botão com o novo status
+                        if (data.isPaid) { 
+                            this.classList.remove('bg-secondary');
+                            this.classList.add('bg-success');
+                            this.textContent = 'Pago';
+                        } else {
+                            this.classList.remove('bg-success');
+                            this.classList.add('bg-secondary');
+                            this.textContent = 'Não pago';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erro:', error);
+                        alert('Ocorreu um erro ao processar sua solicitação.');
+                    });
+                });
             });
         });
     </script>
