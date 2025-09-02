@@ -1,6 +1,5 @@
 using DuoRico.Data;
 using DuoRico.Models;
-using DuoRico.Pages.Transactions;
 using DuoRico.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 
-namespace DuoRico.Pages_Transactions;
+namespace DuoRico.Pages.Transactions;
 
 public class IndexModel : TransactionPageModel
 {
@@ -45,7 +44,7 @@ public class IndexModel : TransactionPageModel
 
         if (validationResult != null) return validationResult;
 
-        //Filtro de um mês após o atual mês
+        //Filtro de um mï¿½s apï¿½s o atual mï¿½s
         if (SelectMonth == 0 || SelectYear == 0)
         {
             var nextMonthDate = DateTime.Now.AddMonths(1);
@@ -74,7 +73,7 @@ public class IndexModel : TransactionPageModel
                     t.IsPaid)
             .SumAsync(t => t.Amount);
 
-        // Valores não pagos
+        // Valores nï¿½o pagos
         AmountUnpaid = await _context.Transactions
             .Include(t => t.User)
             .Where(
@@ -97,5 +96,28 @@ public class IndexModel : TransactionPageModel
             .ToListAsync();
 
         return Page();
+    }
+
+    public record ToggleIsPaidRequest(Guid Id);
+
+    // MÃ©todo Handler para "Pago" e "NÃ£o pago" via AJAX
+    public async Task<IActionResult> OnPostToggleIsPaidAsync([FromBody] ToggleIsPaidRequest request)
+    {
+        if (request?.Id == null || request.Id == Guid.Empty) return BadRequest();
+
+        var loggedInUser = await _userManager.GetUserAsync(User);
+
+        if (loggedInUser?.CoupleId == null) return Challenge();
+
+        var transaction = await _context.Transactions.FirstOrDefaultAsync(t => t.Id == request.Id && t.User.CoupleId == loggedInUser.CoupleId);
+
+        if (transaction == null) return NotFound();
+
+        // Inverte o valor de IsPaid
+        transaction.IsPaid = !transaction.IsPaid;
+        await _context.SaveChangesAsync();
+
+        // Retorna uma resposta JSON para o JS com o novo status
+        return new JsonResult(new { isPaid = transaction.IsPaid });
     }
 }
