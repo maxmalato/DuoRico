@@ -310,7 +310,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const csrfToken = '@Xsrf.GetAndStoreTokens(HttpContext).RequestToken';
-
+            
             const toggleButtons = document.querySelectorAll('.ispaid-toggle');
 
             toggleButtons.forEach(button => {
@@ -318,9 +318,9 @@
                     event.preventDefault();
 
                     const transactionId = this.dataset.id;
-                    const transactionType = '@Model.Type.ToString().ToLower()';
+                    const transactionType = '@Model.Type.ToString()';
 
-                    const url = `/Transactions/Index/${transactionType}?handler=ToggleIsPaid`;
+                    const url = `/Transactions/${transactionType}?handler=ToggleIsPaid`;
 
                     fetch(url, {
                         method: 'POST',

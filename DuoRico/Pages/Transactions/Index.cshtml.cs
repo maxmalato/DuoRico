@@ -1,4 +1,3 @@
-using System.Globalization;
 using DuoRico.Data;
 using DuoRico.Models;
 using DuoRico.Services;
@@ -6,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 
 namespace DuoRico.Pages.Transactions;
 
@@ -97,22 +97,26 @@ public class IndexModel : TransactionPageModel
 
         return Page();
     }
-    
+
+    public record ToggleIsPaidRequest(Guid Id);
+
     // Método Handler para "Pago" e "Não pago" via AJAX
-    public async Task<IActionResult> OnPostToggleIsPaidAsync(Guid? id)
+    public async Task<IActionResult> OnPostToggleIsPaidAsync([FromBody] ToggleIsPaidRequest request)
     {
+        if (request?.Id == null || request.Id == Guid.Empty) return BadRequest();
+
         var loggedInUser = await _userManager.GetUserAsync(User);
-        
+
         if (loggedInUser?.CoupleId == null) return Challenge();
-        
-        var transaction = await _context.Transactions.FirstOrDefaultAsync(t => t.Id == id && t.User.CoupleId == loggedInUser.CoupleId);
-        
-        if(transaction == null) return NotFound();
-        
+
+        var transaction = await _context.Transactions.FirstOrDefaultAsync(t => t.Id == request.Id && t.User.CoupleId == loggedInUser.CoupleId);
+
+        if (transaction == null) return NotFound();
+
         // Inverte o valor de IsPaid
         transaction.IsPaid = !transaction.IsPaid;
         await _context.SaveChangesAsync();
-        
+
         // Retorna uma resposta JSON para o JS com o novo status
         return new JsonResult(new { isPaid = transaction.IsPaid });
     }

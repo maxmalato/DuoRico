@@ -1,4 +1,4 @@
-using DuoRico.Data;
+ï»¿using DuoRico.Data;
 using DuoRico.Services;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
@@ -29,8 +29,8 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.R
 builder.Services.AddRazorPages()
     .AddMvcOptions(options =>
     {
-        // Adiciona a tradução para a mensagem "deve ser um número"
-        options.ModelBindingMessageProvider.SetValueMustBeANumberAccessor((fieldName) => $"O campo {fieldName} deve ser um número.");
+        // Adiciona a traduÃ§Ã£o para a mensagem "deve ser um nÃºmero"
+        options.ModelBindingMessageProvider.SetValueMustBeANumberAccessor((fieldName) => $"O campo {fieldName} deve ser um nï¿½mero.");
     });
 
 builder.Services.AddHttpContextAccessor();
