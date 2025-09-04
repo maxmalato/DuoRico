@@ -64,7 +64,7 @@
             <span class="badge bg-success">
                 Pago
             </span>
-            <span>
+            <span id="amount-paid">
                 @((Model.AmountPaid).ToString("C", new System.Globalization.CultureInfo("pt-BR")))
             </span>
         </div>
@@ -74,7 +74,7 @@
             <span class="badge bg-secondary">
                 Não pago
             </span>
-            <span>
+            <span id="amount-unpaid">
                 @((Model.AmountUnpaid).ToString("C", new System.Globalization.CultureInfo("pt-BR")))
             </span>
         </div>
@@ -112,7 +112,12 @@
                         </div>
 
                         <div class="my-1">
-                            <a href="#" class="badge ispaid-toggle @(item.IsPaid ? "bg-success" : "bg-secondary")" data-id="@item.Id">
+                            <a 
+                                href="#"
+                               class="badge ispaid-toggle @(item.IsPaid ? "bg-success" : "bg-secondary") text-decoration-none text-light"
+                               data-id="@item.Id" 
+                                data-amount="@item.Amount.ToString(System.Globalization.CultureInfo.InvariantCulture)"
+                            >
                                 @(item.IsPaid ? "Pago" : "Não pago")
                             </a>
                         </div>
@@ -178,7 +183,11 @@
                         </td>
                         <td>@item.Category</td>
                         <td>
-                            <a href="#" class="badge ispaid-toggle @(item.IsPaid ? "bg-success" : "bg-secondary")" data-id="@item.Id">
+                            <a 
+                                href="#"
+                               class="badge ispaid-toggle @(item.IsPaid ? "bg-success" : "bg-secondary") text-decoration-none text-light"
+                               data-id="@item.Id"
+                                data-amount="@item.Amount.ToString(System.Globalization.CultureInfo.InvariantCulture)">
                                 @(item.IsPaid ? "Pago" : "Não pago")
                             </a>
                         </td>
@@ -309,48 +318,64 @@
     @* Atualização do status Pago ou Não Pago *@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const csrfToken = '@Xsrf.GetAndStoreTokens(HttpContext).RequestToken';
-            
-            const toggleButtons = document.querySelectorAll('.ispaid-toggle');
+            const antiForgeryToken = '@Xsrf.GetAndStoreTokens(HttpContext).RequestToken';
+            const totalPaidElement = document.getElementById('amount-paid');
+            const totalUnpaidElement = document.getElementById('amount-unpaid');
+            const culture = 'pt-BR';
+            const currencyOptions = { style: 'currency', currency: 'BRL' };
 
-            toggleButtons.forEach(button => {
-                button.addEventListener('click', function (event) {
+            // Função para converter o texto "R$ 12,50" para o número 12.50
+            function parseCurrency(value) {
+                if (!value) return 0;
+                return parseFloat(value.replace('R$', '').replace(/\./g, '').replace(',', '.').trim());
+            }
+
+            document.querySelectorAll('.ispaid-toggle').forEach(badge => {
+                badge.addEventListener('click', function (event) {
                     event.preventDefault();
 
                     const transactionId = this.dataset.id;
-                    const transactionType = '@Model.Type.ToString()';
+                    const transactionAmount = parseFloat(this.dataset.amount);
+                    const currentBadge = this;
 
-                    const url = `/Transactions/${transactionType}?handler=ToggleIsPaid`;
-
-                    fetch(url, {
+                    fetch(`?handler=ToggleIsPaid`, {
                         method: 'POST',
                         headers: {
-                            'RequestVerificationToken': csrfToken,
+                            'RequestVerificationToken': antiForgeryToken,
                             'Content-Type': 'application/json'
                         },
-                        // Envia o ID no corpo da requisição
                         body: JSON.stringify({ id: transactionId })
                     })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Erro na requisição');
-                        }
-                        return response.json();
-                    })
+                    .then(response => response.ok ? response.json() : Promise.reject('Erro no servidor'))
                     .then(data => {
-                        // Atualiza o botão com o novo status
-                        if (data.isPaid) { 
-                            this.classList.remove('bg-secondary');
-                            this.classList.add('bg-success');
-                            this.textContent = 'Pago';
+                        let currentPaid = parseCurrency(totalPaidElement.textContent);
+                        let currentUnpaid = parseCurrency(totalUnpaidElement.textContent);
+
+                        // Atualiza o badge clicado
+                        if (data.isPaid) {
+                            currentBadge.textContent = 'Pago';
+                            currentBadge.classList.remove('bg-secondary');
+                            currentBadge.classList.add('bg-success');
+
+                            // Recalcula os totais
+                            currentPaid += transactionAmount;
+                            currentUnpaid -= transactionAmount;
                         } else {
-                            this.classList.remove('bg-success');
-                            this.classList.add('bg-secondary');
-                            this.textContent = 'Não pago';
+                            currentBadge.textContent = 'Não pago';
+                            currentBadge.classList.remove('bg-success');
+                            currentBadge.classList.add('bg-secondary');
+
+                            // Recalcula os totais
+                            currentPaid -= transactionAmount;
+                            currentUnpaid += transactionAmount;
                         }
+
+                        // Atualiza os totais na tela, formatando-os de volta para moeda
+                        totalPaidElement.textContent = currentPaid.toLocaleString(culture, currencyOptions);
+                        totalUnpaidElement.textContent = currentUnpaid.toLocaleString(culture, currencyOptions);
                     })
                     .catch(error => {
-                        console.error('Erro:', error);
+                        console.error('Erro ao atualizar status:', error);
                         alert('Ocorreu um erro ao processar sua solicitação.');
                     });
                 });
