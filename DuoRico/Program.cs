@@ -30,7 +30,7 @@ builder.Services.AddRazorPages()
     .AddMvcOptions(options =>
     {
         // Adiciona a tradução para a mensagem "deve ser um número"
-        options.ModelBindingMessageProvider.SetValueMustBeANumberAccessor((fieldName) => $"O campo {fieldName} deve ser um n�mero.");
+        options.ModelBindingMessageProvider.SetValueMustBeANumberAccessor((fieldName) => $"O campo {fieldName} deve ser um número.");
     });
 
 builder.Services.AddHttpContextAccessor();
