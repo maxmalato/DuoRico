@@ -1,33 +1,35 @@
-# Imagem base para tempo de execução
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-WORKDIR /app
-EXPOSE 8080
-
-# Fase de build
+# Estágio 1: Build da Aplicação
+# Usa a imagem completa do SDK do .NET 8 para compilar o projeto.
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
+
+# Copia os arquivos de projeto/solução e restaura as dependências.
+COPY ["DuoRico.sln", "./"]
 COPY ["DuoRico/DuoRico.csproj", "DuoRico/"]
-RUN dotnet restore "DuoRico/DuoRico.csproj"
+RUN dotnet restore "./DuoRico.sln"
+
+# Copia todo o código fonte.
 COPY . .
 WORKDIR "/src/DuoRico"
-RUN dotnet build "DuoRico.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-# Fase de publish
-FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "DuoRico.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+# Publica a aplicação em modo Release.
+RUN dotnet publish "DuoRico.csproj" -c Release -o /app/publish
 
-# Imagem final para execução
+# Estágio 2: Imagem Final para Execução
+# Usa a imagem leve do ASP.NET Runtime.
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
-WORKDIR /app
-COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "DuoRico.dll"]
 
-# Definição do idioma pt-br
-RUN apt-get update && apt-get install -y locales
+# --- INÍCIO DA CONFIGURAÇÃO DE IDIOMA (LOCAL CORRETO) ---
+# Instala e configura o idioma Português (pt-BR) no container Linux.
+# Isso garante que o .NET consiga lidar com acentos corretamente.
+RUN apt-get update && apt-get install -y locales && rm -rf /var/lib/apt/lists/*
 RUN sed -i -e 's/# pt_BR.UTF-8 UTF-8/pt_BR.UTF-8 UTF-8/' /etc/locale.gen && \
     locale-gen
 ENV LANG pt_BR.UTF-8
 ENV LANGUAGE pt_BR:pt
 ENV LC_ALL pt_BR.UTF-8
+# --- FIM DA CONFIGURAÇÃO DE IDIOMA ---
+
+WORKDIR /app
+COPY --from=build /app/publish .
+ENTRYPOINT ["dotnet", "DuoRico.dll"]
