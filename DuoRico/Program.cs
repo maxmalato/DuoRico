@@ -63,6 +63,4 @@ app.UseAuthorization();
 
 app.MapRazorPages();
 
-app.MapGet("/health", () => Results.Ok("Healthy"));
-
 app.Run();
