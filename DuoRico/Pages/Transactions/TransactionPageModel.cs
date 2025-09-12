@@ -21,6 +21,12 @@ public class TransactionPageModel : PageModel
     public Transaction Transaction { get; set; } = default!;
     public TransactionType Type { get; set; }
     public List<string> Categories { get; set; } = new();
+    
+    [BindProperty(SupportsGet = true)]
+    public int ReturnMonth { get; set; }
+
+    [BindProperty(SupportsGet = true)]
+    public int ReturnYear { get; set; }
 
     protected async Task<(IActionResult, ApplicationUser)> ValidateAndLoadContextAsync(string type)
     {

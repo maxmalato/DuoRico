@@ -70,7 +70,7 @@ public class EditModel : TransactionPageModel
             }
         }
 
-        return RedirectToPage("./Index", new { type });
+        return RedirectToPage("./Index", new { type, selectMonth = ReturnMonth, selectYear = ReturnYear });
     }
 
     private bool TransactionExists(Guid id)

@@ -88,6 +88,6 @@ public class CreateModel : TransactionPageModel
         await _context.Transactions.AddRangeAsync(newTransactions);
         await _context.SaveChangesAsync();
 
-        return RedirectToPage("./Index", new { type });
+        return RedirectToPage("./Index",  new { type, selectMonth = ReturnMonth, selectYear = ReturnYear});
     }
 }

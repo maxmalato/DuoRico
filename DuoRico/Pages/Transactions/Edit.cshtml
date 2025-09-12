@@ -18,6 +18,9 @@
                 </div>
                 <div class="card-body p-4">
                     <form method="post">
+                        <input type="hidden" asp-for="ReturnMonth" />
+                        <input type="hidden" asp-for="ReturnYear" />
+
                         <input type="hidden" asp-for="Transaction.Id" />
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
@@ -46,7 +49,7 @@
                         </div>
 
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <a asp-page="Index" asp-route-type="@Model.Type" class="btn btn-secondary">Cancelar</a>
+                            <a asp-page="Index" asp-route-selectMonth="@Model.ReturnMonth" asp-route-selectYear="@Model.ReturnYear" asp-route-type="@Model.Type" class="btn btn-secondary">Cancelar</a>
                             <input type="submit" value="Salvar Alterações" class="btn @btnClass" />
                         </div>
                     </form>

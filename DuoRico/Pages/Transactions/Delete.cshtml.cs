@@ -1,5 +1,4 @@
 using DuoRico.Data;
-using DuoRico.Helpers;
 using DuoRico.Pages.Transactions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -32,7 +31,7 @@ public class DeleteModel : TransactionPageModel
     //    return Page();
     //}
 
-    public async Task<IActionResult> OnPostAsync(Guid? id, string type)
+    public async Task<IActionResult> OnPostAsync(Guid? id, string type, int returnMonth, int returnYear)
     {
         if (id == null) return NotFound(0);
 
@@ -49,6 +48,6 @@ public class DeleteModel : TransactionPageModel
         _context.Transactions.Remove(transactionToUpdate);
         await _context.SaveChangesAsync();
 
-        return RedirectToPage("./Index", new { type });
+        return RedirectToPage("./Index", new { type, SelectMonth = returnMonth, SelectYear = returnYear });
     }
 }
