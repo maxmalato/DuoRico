@@ -6,6 +6,7 @@ using DuoRico.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace DuoRico.Pages_Transactions;
 
@@ -88,6 +89,6 @@ public class CreateModel : TransactionPageModel
         await _context.Transactions.AddRangeAsync(newTransactions);
         await _context.SaveChangesAsync();
 
-        return RedirectToPage("./Index", new { type });
+        return RedirectToPage("./Index",  new { type, });
     }
 }
