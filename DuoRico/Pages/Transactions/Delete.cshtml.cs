@@ -1,5 +1,4 @@
 using DuoRico.Data;
-using DuoRico.Helpers;
 using DuoRico.Pages.Transactions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -49,6 +48,6 @@ public class DeleteModel : TransactionPageModel
         _context.Transactions.Remove(transactionToUpdate);
         await _context.SaveChangesAsync();
 
-        return RedirectToPage("./Index", new { type });
+        return RedirectToPage("./Index", new { type, selectMonth = ReturnMonth, selectYear = ReturnYear });
     }
 }
