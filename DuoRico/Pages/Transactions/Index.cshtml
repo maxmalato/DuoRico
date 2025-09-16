@@ -252,17 +252,21 @@
         document.addEventListener('DOMContentLoaded', function () {
 
             const deleteForm = document.getElementById('deleteForm');
-
             const deleteButtons = document.querySelectorAll('.delete-btn');
+
+            const monthSelect = document.querySelector('[name="SelectMonth"]');
+            const yearSelect = document.querySelector('[name="SelectYear"]');
 
             deleteButtons.forEach(button => {
                 button.addEventListener('click', function () {
 
                     const transactionId = this.dataset.id;
-
                     const transactionType = '@Model.Type.ToString().ToLower()';
 
-                    const actionUrl = `/Transactions/Delete/${transactionId}/${transactionType}`;
+                    const month = monthSelect.value;
+                    const year = yearSelect.value;
+
+                    const actionUrl = `/Transactions/Delete/${transactionId}/${transactionType}?returnMonth=${month}&returnYear=${year}`;
 
                     deleteForm.setAttribute('action', actionUrl);
                 });
