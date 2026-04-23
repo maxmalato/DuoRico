@@ -17,9 +17,9 @@ public class DashboardModel : PageModel
     private readonly ApplicationDbContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IDropdownService _dropdownService;
-    private readonly TransactionService _transactionService;
+    private readonly ITransactionService _transactionService;
 
-    public DashboardModel(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IDropdownService dropdownService, TransactionService transactionService)
+    public DashboardModel(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IDropdownService dropdownService, ITransactionService transactionService)
     {
         _context = context;
         _userManager = userManager;

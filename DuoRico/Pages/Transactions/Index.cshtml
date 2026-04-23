@@ -1,5 +1,6 @@
 @page "{type:alpha}"
 @using DuoRico.Models
+@using DuoRico.Components
 @inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
 
 @model IndexModel
@@ -80,8 +81,17 @@
         </div>
     </div>
 
+    @* MudBlazor *@
+    <div id="blazor-container">
+        <component type="typeof(TransactionTable)"
+                   render-mode="ServerPrerendered"
+                   param-Month="@Model.SelectMonth"
+                   param-Year="@Model.SelectYear" />
+
+    </div>
+
     @* Modo Mobile *@
-    <div class="d-md-none" id="mobile-list-container">
+    @* <div class="d-md-none" id="mobile-list-container">
         @if (!Model.TransactionList.Any())
         {
             <div class="text-center p-4 border rounded text-muted">Nenhuma transação encontrada.</div>
@@ -146,10 +156,10 @@
                 }
             </ul>
         }
-    </div>
+    </div> *@
 
     @* Modo Desktop *@
-    <table class="table table-hover align-middle d-none d-md-table" id="desktop-table-container">
+    @* <table class="table table-hover align-middle d-none d-md-table" id="desktop-table-container">
         <thead>
             <tr>
                 <th>Descrição</th>
@@ -222,7 +232,7 @@
                 </td>
             </tr>
         </tbody>
-    </table>
+    </table> *@
 </div>
 
 <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">

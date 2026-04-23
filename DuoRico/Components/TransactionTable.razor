@@ -1,0 +1,84 @@
+﻿@using DuoRico.DTOs
+@using DuoRico.Models
+@using System.Globalization
+@using DuoRico.Services
+@using MudBlazor
+
+@inject ITransactionService TransactionService
+
+<MudTable Items="@_transactions"
+          Loading="@(_isLoading)"
+          Dense="true"
+          Hover="true"
+          Bordered="false"
+          Striped="true"
+          Elevation="0"
+          Breakpoint="Breakpoint.Sm"
+          LoadingProgressColor="Color.Info"
+          NoItemsText="Nenhuma transação encontrada para este período.">
+    
+    <HeaderContent>
+        <MudTh>Descrição</MudTh>
+        <MudTh>Categoria</MudTh>
+        <MudTh>Estado</MudTh>
+        <MudTh Style="text-align: right">Valor</MudTh>
+        <MudTh Style="text-align: center">Ações</MudTh>
+    </HeaderContent>
+    
+    <RowTemplate>
+        <MudTd DataLabel="Descrição">
+            <MudText Typo="Typo.body2" Style="font-weight: 600">@context.Description</MudText>
+            <MudText Typo="Typo.caption" Color="Color.Secondary">
+                @context.CreatedAt.ToString("dd/MM/yyyy")
+                @if (context.TotalInstallments > 1)
+                {
+                    <span class="ms-2">(@context.InstallmentNumber/@context.TotalInstallments)</span>
+                }
+            </MudText>
+        </MudTd>
+        <MudTd DataLabel="Categoria">@context.Category</MudTd>
+        <MudTd DataLabel="Status">
+            <MudChip T="string"
+                     Size="Size.Small"
+                     Variant="Variant.Text"
+                     Color="@(context.IsPaid ? Color.Success : Color.Default)">
+                @(context.IsPaid ? "Pago" : "Não pago")
+            </MudChip>
+        </MudTd>
+        <MudTd DataLabel="Valor" Style="text-align: right">
+            <MudText Color="@(context.Type == TransactionType.Income ? Color.Success : Color.Error)"
+                     Style="font-weight: 700">
+                @context.Amount.ToString("C", CultureInfo.GetCultureInfo("pt-BR"))
+            </MudText>
+        </MudTd>
+        <MudTd DataLabel="Ações" Style="text-align: center">
+            <MudMenu Icon="@Icons.Material.Filled.MoreVert" AnchorOrigin="Origin.BottomCenter">
+                <MudMenuItem Icon="@Icons.Material.Filled.Edit" Color="Color.Info">Editar</MudMenuItem>
+                <MudMenuItem Icon="@Icons.Material.Filled.Delete" Color="Color.Error">Eliminar</MudMenuItem>
+            </MudMenu>
+        </MudTd>
+    </RowTemplate>
+</MudTable>
+
+
+@code {
+    [Parameter] public int Month { get; set; }
+    [Parameter] public int Year { get; set; }
+
+    private List<TransactionDto> _transactions = new();
+    private bool _isLoading = true;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _isLoading = true;
+
+        try
+        {
+            _transactions = await TransactionService.GetCoupleTransactionsForPeriodAsync(Month, Year);
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+}

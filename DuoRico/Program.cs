@@ -3,6 +3,7 @@ using DuoRico.Services;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
+using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,8 +34,11 @@ builder.Services.AddRazorPages()
         options.ModelBindingMessageProvider.SetValueMustBeANumberAccessor((fieldName) => $"O campo {fieldName} deve ser um número.");
     });
 
+builder.Services.AddServerSideBlazor();
+builder.Services.AddMudServices();
+
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<TransactionService>();
+builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<IDropdownService, DropdownService>();
 
 var app = builder.Build();
@@ -62,5 +66,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapRazorPages();
+
+app.MapBlazorHub();
 
 app.Run();

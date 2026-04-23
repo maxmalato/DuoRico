@@ -1,11 +1,12 @@
 ﻿using DuoRico.Data;
 using DuoRico.Models;
+using DuoRico.DTOs;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace DuoRico.Services;
 
-public class TransactionService
+public class TransactionService : ITransactionService
 {
     private readonly ApplicationDbContext _context;
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -92,29 +93,34 @@ public class TransactionService
     }
 
     // Buscar transações do casal autenticado por filtro (mês e ano)
-    public async Task<List<Transaction>> GetCoupleTransactionsForPeriodAsync(int month, int year)
+    public async Task<List<TransactionDto>> GetCoupleTransactionsForPeriodAsync(int month, int year)
     {
         var currentUser = await GetCurrentUserAsync();
 
         if (currentUser?.CoupleId == null)
-            return new List<Transaction>();
+            return new List<TransactionDto>();
 
         return await _context.Transactions
             .Where(t => t.User.CoupleId == currentUser.CoupleId &&
-                        t.CreatedAt.Month == month &&
-                        t.CreatedAt.Year == year)
+                        t.Month == month &&
+                        t.Year == year)
+            .Select(t => new TransactionDto
+            {
+                Id = t.Id,
+                Description = t.Description,
+                Amount = t.Amount,
+                Category = t.Category,
+                Type = t.Type,
+                IsPaid = t.IsPaid,
+                CreatedAt = t.CreatedAt,
+                InstallmentNumber = t.InstallmentNumber,
+                TotalInstallments = t.TotalInstallments,
+                InstallmentGroupId = t.InstallmentGroupId
+            })
             .ToListAsync();
     }
 
-    // Soma dos valores das transações do casal autenticado por filtro (mês e ano)
-    public class TransactionSummary
-    {
-        public decimal TotalIncome { get; set; }
-        public decimal TotalExpense { get; set; }
-        public decimal Balance => TotalIncome - TotalExpense;
-    }
-
-    public async Task<TransactionSummary> GetSummaryForPeriodAsync(Guid coupleId, int month, int year)
+    public async Task<TransactionSummaryDto> GetSummaryForPeriodAsync(Guid coupleId, int month, int year)
     {
         // Calcula a soma das receitas diretamente no banco de dados
         var totalIncome = await _context.Transactions
@@ -132,7 +138,7 @@ public class TransactionService
                         t.Year == year)
             .SumAsync(t => t.Amount);
 
-        return new TransactionSummary
+        return new TransactionSummaryDto
         {
             TotalIncome = totalIncome,
             TotalExpense = totalExpense

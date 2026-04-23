@@ -12,9 +12,9 @@ namespace DuoRico.Pages.Transactions;
 public class IndexModel : TransactionPageModel
 {
     private readonly IDropdownService _dropdownService;
-    private readonly TransactionService _transactionService;
+    private readonly ITransactionService _transactionService;
 
-    public IndexModel(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IDropdownService dropdownService, TransactionService transactionService)
+    public IndexModel(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IDropdownService dropdownService, ITransactionService transactionService)
         : base(context, userManager)
     {
         _dropdownService = dropdownService;
